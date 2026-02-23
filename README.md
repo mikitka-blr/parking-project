@@ -51,7 +51,7 @@ json
 
 Технологии
 
-    Java 15
+    Java 25
 
     Spring Boot — фреймворк для создания REST API
 
