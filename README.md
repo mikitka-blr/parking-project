@@ -71,23 +71,22 @@ json
   "additionalInfo": "Covered"
 }
 
-Проверка работы
+# Проверка работы
 
-# Получить все места
+Получить все места
 http://localhost:8080/api/slots
 
-# Получить только занятые
+Получить только занятые
 http://localhost:8080/api/slots?occupied=true
 
-# Получить место с ID=1
+Получить место с ID=1
 http://localhost:8080/api/slots/1
 
-# Получить обычные места
+Получить обычные места
 http://localhost:8080/api/slots/type/REGULAR
 
-Проверка стиля кода (Checkstyle)
+# Проверка стиля кода (Checkstyle)
 
-# Проверить стиль кода
 mvn checkstyle:check
 
 # Анализ кода с SonarCloud
