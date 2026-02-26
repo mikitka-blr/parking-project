@@ -1,44 +1,66 @@
-Система управления парковкой
+# Система управления парковкой
 
-Проект представляет собой REST API для управления парковочными местами. В системе выделено три типа мест:
+## Описание
+REST API для управления парковочными местами. Поддерживаются три типа мест:
+- **Обычные** — под крышей или на открытом воздухе
+- **Электромобили** — с указанием мощности зарядки
+- **Для инвалидов** — с широким въездом
 
-    Обычные (Regular) — места под крышей или на открытом воздухе
+## Выполненные требования
 
-    С зарядкой для электромобилей (Electric) — с указанием мощности зарядки
+### 1. Spring Boot приложение
+Создано Spring Boot приложение с точкой входа `Main.java`, аннотированной `@SpringBootApplication`.
 
-    Для людей с ограниченными возможностями (Disabled) — с широким въездом
+### 2. REST API для ключевой сущности
+Ключевая сущность — парковочное место (`BaseParkingSlot` и его наследники). Для неё реализованы все необходимые эндпоинты.
 
-Реализованный функционал
-1. Архитектура приложения
+### 3. GET endpoints
+- **С @RequestParam:** `/api/slots?occupied=true` — фильтрация мест по статусу занятости
+- **С @PathVariable:** `/api/slots/{id}` — получение места по ID и `/api/slots/type/{type}` — получение по типу
 
-    Многослойная архитектура: Controller → Service → Repository
+### 4. Многослойная архитектура
+Реализованы слои:
+- **Controller** — обработка HTTP-запросов
+- **Service** — бизнес-логика
+- **Repository** — хранение данных (in-memory)
 
-    Модель данных: абстрактный класс BaseParkingSlot и наследование для разных типов мест (полиморфизм)
+### 5. DTO и Mapper
+- **DTO:** `ParkingSlotDTO` — объект для передачи данных клиенту
+- **Mapper:** `ParkingMapper` — преобразование Entity в DTO
 
-    DTO и Mapper: преобразование сущностей в ответы API через ParkingMapper
+### 6. Checkstyle
+Настроен Checkstyle с правилами SquareStyle, код приведён к единому стилю.
 
-2. REST API эндпоинты
-   
-Метод	URL	Описание	Параметры
+## Технологии
+- Java 25
+- Spring Boot
+- Maven
+- Checkstyle (SquareStyle)
+- SonarCloud
 
-GET	/api/slots	Получение всех мест	?occupied=true/false 
+## Запуск кода
 
-GET	/api/slots/{id}	Получение места по ID	id
+# Клонировать репозиторий
+git clone https://github.com/mikitka-blr/parking-project.git
 
-GET	/api/slots/type/{type}	Фильтрация по типу места	type (REGULAR/ELECTRIC/DISABLED)
+# Перейти в папку проекта
+cd parking-project
 
-4. Примеры запросов
-text
+# Запустить приложение
+./mvnw spring-boot:run
 
-GET /api/slots
+Или открыть проект в IntelliJ IDEA и запустить Main.java.
 
-GET /api/slots?occupied=
-
-GET /api/slots/1
-
-GET /api/slots/type/REGULAR
-
-4. Пример ответа
+После запуска сервер будет доступен по адресу:
+http://localhost:8080
+REST API
+Доступные запросы
+Метод	URL	Описание	Пример
+GET	/api/slots	Получение всех мест	/api/slots
+GET	/api/slots	Фильтрация по статусу	/api/slots?occupied=true
+GET	/api/slots/{id}	Получение места по ID	/api/slots/1
+GET	/api/slots/type/{type}	Получение по типу	/api/slots/type/REGULAR
+Пример ответа
 json
 
 {
@@ -49,31 +71,25 @@ json
   "additionalInfo": "Covered"
 }
 
-Технологии
+Проверка работы
 
-    Java 25
+# Получить все места
+http://localhost:8080/api/slots
 
-    Spring Boot — фреймворк для создания REST API
+# Получить только занятые
+http://localhost:8080/api/slots?occupied=true
 
-    Maven — сборка проекта
+# Получить место с ID=1
+http://localhost:8080/api/slots/1
 
-    Checkstyle — проверка стиля кода (SquareStyle)
+# Получить обычные места
+http://localhost:8080/api/slots/type/REGULAR
 
-Запуск проекта
+Проверка стиля кода (Checkstyle)
 
-    Клонировать репозиторий:
-
-bash
-
-git clone https://github.com/mikitka-blr/parking-project.git
-
-    Открыть в IntelliJ IDEA
-
-    Запустить Main.java
-
-    Открыть в браузере: http://localhost:8080/api/slots
-
-Проверка стиля кода
-bash
-
+# Проверить стиль кода
 mvn checkstyle:check
+
+# Анализ кода с SonarCloud
+
+https://sonarcloud.io/images/project_badges/sonarcloud-black.svg
