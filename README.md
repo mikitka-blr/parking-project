@@ -81,4 +81,4 @@ mvn checkstyle:check
 
 # Анализ кода с SonarCloud
 
-https://sonarcloud.io/images/project_badges/sonarcloud-black.svg
+[https://sonarcloud.io/images/project_badges/sonarcloud-black.svg](https://sonarcloud.io/project/overview?id=mikitka-blr_parking-project)
