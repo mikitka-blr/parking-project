@@ -40,13 +40,13 @@ REST API для управления парковочными местами. П
 
 ## Запуск кода
 
-# Клонировать репозиторий
+Клонировать репозиторий
 git clone https://github.com/mikitka-blr/parking-project.git
 
-# Перейти в папку проекта
+Перейти в папку проекта
 cd parking-project
 
-# Запустить приложение
+Запустить приложение
 ./mvnw spring-boot:run
 
 Или открыть проект в IntelliJ IDEA и запустить Main.java.
