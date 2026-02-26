@@ -56,13 +56,10 @@ http://localhost:8080
 
 Доступные запросы
 
-GET	/api/slots	Получение всех мест	/api/slots
-
-GET	/api/slots	Фильтрация по статусу	/api/slots?occupied=true
-
-GET	/api/slots/{id}	Получение места по ID	/api/slots/1
-
-GET	/api/slots/type/{type}	Получение по типу	/api/slots/type/REGULAR
+- GET	/api/slots	Получение всех мест	/api/slots
+- GET	/api/slots	Фильтрация по статусу	/api/slots?occupied=true
+- GET	/api/slots/{id}	Получение места по ID	/api/slots/1
+- GET	/api/slots/type/{type}	Получение по типу	/api/slots/type/REGULAR
 
 # Проверка работы
 
