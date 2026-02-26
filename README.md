@@ -51,25 +51,18 @@ cd parking-project
 
 Или открыть проект в IntelliJ IDEA и запустить Main.java.
 
-# После запуска сервер будет доступен по адресу:
+После запуска сервер будет доступен по адресу:
 http://localhost:8080
-REST API
-Доступные запросы
-Метод	URL	Описание	Пример
-GET	/api/slots	Получение всех мест	/api/slots
-GET	/api/slots	Фильтрация по статусу	/api/slots?occupied=true
-GET	/api/slots/{id}	Получение места по ID	/api/slots/1
-GET	/api/slots/type/{type}	Получение по типу	/api/slots/type/REGULAR
-Пример ответа
-json
 
-{
-  "id": 1,
-  "number": "A-101",
-  "status": "Available",
-  "slotType": "REGULAR",
-  "additionalInfo": "Covered"
-}
+Доступные запросы
+
+GET	/api/slots	Получение всех мест	/api/slots
+
+GET	/api/slots	Фильтрация по статусу	/api/slots?occupied=true
+
+GET	/api/slots/{id}	Получение места по ID	/api/slots/1
+
+GET	/api/slots/type/{type}	Получение по типу	/api/slots/type/REGULAR
 
 # Проверка работы
 
