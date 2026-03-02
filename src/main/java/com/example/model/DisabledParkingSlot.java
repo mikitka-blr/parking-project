@@ -1,19 +1,23 @@
 package com.example.model;
 
-public class DisabledParkingSlot extends BaseParkingSlot {
-    private final boolean hasWiderEntrance;
+import jakarta.persistence.Entity;
 
-    public DisabledParkingSlot(Long id, String number, boolean occupied, boolean hasWiderEntrance) {
-        super(id, number, occupied);
+@Entity
+public class DisabledParkingSlot extends BaseParkingSlot {
+    private boolean hasWiderEntrance;
+
+    protected DisabledParkingSlot() {
+
+    }
+
+    public DisabledParkingSlot(String number, boolean occupied, boolean hasWiderEntrance) {
+        super(number, occupied);
         this.hasWiderEntrance = hasWiderEntrance;
     }
 
     @Override
     public String getSlotType() {
-        return "DISABLED";
-    }
-
+        return "DISABLED"; }
     public boolean hasWiderEntrance() {
-        return hasWiderEntrance;
-    }
+        return hasWiderEntrance; }
 }

@@ -1,10 +1,18 @@
 package com.example.model;
 
-public class RegularParkingSlot extends BaseParkingSlot {
-    private final boolean isCovered;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
-    public RegularParkingSlot(Long id, String number, boolean occupied, boolean isCovered) {
-        super(id, number, occupied);
+@Entity
+@Table(name = "regular_slots")
+public class RegularParkingSlot extends BaseParkingSlot {
+    private boolean isCovered;
+
+    protected RegularParkingSlot() {
+    }
+
+    public RegularParkingSlot(String number, boolean occupied, boolean isCovered) {
+        super(number, occupied);
         this.isCovered = isCovered;
     }
 
@@ -15,5 +23,9 @@ public class RegularParkingSlot extends BaseParkingSlot {
 
     public boolean isCovered() {
         return isCovered;
+    }
+
+    public void setCovered(boolean covered) {
+        isCovered = covered;
     }
 }

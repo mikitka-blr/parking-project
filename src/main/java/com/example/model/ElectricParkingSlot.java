@@ -1,19 +1,23 @@
 package com.example.model;
 
-public class ElectricParkingSlot extends BaseParkingSlot {
-    private final int chargerPower;
+import jakarta.persistence.Entity;
 
-    public ElectricParkingSlot(Long id, String number, boolean occupied, int chargerPower) {
-        super(id, number, occupied);
+@Entity
+public class ElectricParkingSlot extends BaseParkingSlot {
+    private int chargerPower;
+
+    protected ElectricParkingSlot() {
+
+    }
+
+    public ElectricParkingSlot(String number, boolean occupied, int chargerPower) {
+        super(number, occupied);
         this.chargerPower = chargerPower;
     }
 
     @Override
     public String getSlotType() {
-        return "ELECTRIC";
-    }
-
+        return "ELECTRIC"; }
     public int getChargerPower() {
-        return chargerPower;
-    }
+        return chargerPower; }
 }

@@ -1,21 +1,109 @@
-Система управления парковкой
+# Система управления парковкой
 
- Описание
-Проект представляет собой REST API, который позволяет просматривать информацию о парковочных местах. В системе выделено три типа мест:
- - Обычные (Regular)
- - С зарядкой для электромобилей (Electric)
- - Для людей с ограниченными возможностями (Disabled)
+## Описание
+REST API для управления парковочными местами. Поддерживаются три типа мест:
+- **Обычные** — под крышей или на открытом воздухе
+- **Электромобили** — с указанием мощности зарядки
+- **Для инвалидов** — с широким въездом
 
-Реализованный функционал
-В соответствии с требованиями лабораторной работы реализовано:
-1. Слои приложения**: Controller -> Service -> Repository.
-2. REST API**:
-   - `GET /api/slots` — получение всех мест (есть фильтр `?occupied=true/false` через `@RequestParam`).
-   - `GET /api/slots/{id}` — получение места по ID (`@PathVariable`).
-   - `GET /api/slots/type/{type}` — фильтрация по типу места.
-3. DTO и Mapper**: вся логика преобразования сущностей в ответы API вынесена в отдельный компонент `ParkingMapper`.
-4. Модель данных**: использование абстрактного класса `BaseParkingSlot` и наследования для разных типов мест.
+## Выполненные требования
 
-Запуск
-Для запуска проекта необходимо:
-1. Склонировать репозиторий.
+### 1. Spring Boot приложение
+Создано Spring Boot приложение с точкой входа `Main.java`, аннотированной `@SpringBootApplication`.
+
+### 2. REST API для ключевой сущности
+Ключевая сущность — парковочное место (`BaseParkingSlot` и его наследники). Для неё реализованы все необходимые эндпоинты.
+
+### 3. GET endpoints
+- **С @RequestParam:** `/api/slots?occupied=true` — фильтрация мест по статусу занятости
+- **С @PathVariable:** `/api/slots/{id}` — получение места по ID и `/api/slots/type/{type}` — получение по типу
+
+### 4. Многослойная архитектура
+Реализованы слои:
+- **Controller** — обработка HTTP-запросов
+- **Service** — бизнес-логика
+- **Repository** — хранение данных (in-memory)
+
+### 5. DTO и Mapper
+- **DTO:** `ParkingSlotDTO` — объект для передачи данных клиенту
+- **Mapper:** `ParkingMapper` — преобразование Entity в DTO
+
+### 6. Checkstyle
+Настроен Checkstyle с правилами SquareStyle, код приведён к единому стилю.
+
+## Технологии
+- Java 25
+- Spring Boot
+- Maven
+- Checkstyle (SquareStyle)
+- SonarCloud
+
+## Запуск кода
+
+Клонировать репозиторий
+git clone https://github.com/mikitka-blr/parking-project.git
+
+Перейти в папку проекта
+cd parking-project
+
+Запустить приложение
+./mvnw spring-boot:run
+
+Или открыть проект в IntelliJ IDEA и запустить Main.java.
+
+После запуска сервер будет доступен по адресу:
+http://localhost:8080
+
+Доступные запросы
+
+- GET	/api/slots	Получение всех мест	/api/slots
+- GET	/api/slots	Фильтрация по статусу	/api/slots?occupied=true
+- GET	/api/slots/{id}	Получение места по ID	/api/slots/1
+- GET	/api/slots/type/{type}	Получение по типу	/api/slots/type/REGULAR
+
+# Проверка работы
+
+Получить все места
+http://localhost:8080/api/slots
+
+Получить только занятые
+http://localhost:8080/api/slots?occupied=true
+
+Получить место с ID=1
+http://localhost:8080/api/slots/1
+
+Получить обычные места
+http://localhost:8080/api/slots/type/REGULAR
+
+# Проверка стиля кода (Checkstyle)
+
+mvn checkstyle:check
+
+# Анализ кода с SonarCloud
+
+[https://sonarcloud.io/images/project_badges/sonarcloud-black.svg](https://sonarcloud.io/project/overview?id=mikitka-blr_parking-project)
+
+## Обновления: Реляционная БД и JPA
+
+### 7. Работа с базой данных (JPA)
+- **СУБД:** Подключена H2 Database (In-memory).
+- **Сложные связи:**
+    - **OneToMany:** Парковка (`ParkingLot`) и места (`BaseParkingSlot`).
+    - **ManyToMany:** Бронирование (`Reservation`) и доп. услуги (`ExtraService`).
+- **Наследование:** Реализована стратегия `JOINED` для иерархии парковочных мест.
+
+### 8. Оптимизация и надежность
+- **Решение N+1:** Использование `@EntityGraph` в `BaseParkingSlotRepository` для загрузки данных о парковке одним запросом.
+- **Транзакции:** Использование `@Transactional` в `ParkingService` для обеспечения атомарности бронирования (откат всех изменений при ошибке).
+
+## Инструкция по проверке БД
+
+1. **Консоль H2:** Доступна после запуска по адресу `http://localhost:8080/h2-console`.
+    - JDBC URL: `jdbc:h2:mem:parkingdb`
+    - User: `sa` (пароль пустой).
+
+2. **Тест транзакций:**
+   Отправьте POST-запрос на `/api/slots/999/book`. Так как ID 999 не существует, произойдет ошибка. Проверьте таблицу `USERS` — она останется пустой (откат сработал).
+
+3. **Тест ManyToMany:**
+   После бронирования проверьте таблицу `RESERVATION_SERVICES`, где хранятся связи между вашей бронью и услугами.
