@@ -19,7 +19,7 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs
 hs_err_pid*
 replay_pid*
 
@@ -37,6 +37,10 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 
 # Eclipse
 .project
@@ -48,6 +52,10 @@ bin/
 .vscode/
 .settings/
 
+# NetBeans
+nb-configuration.xml
+nbactions.xml
+
 # OS generated files
 .DS_Store
 .DS_Store?
@@ -56,3 +64,16 @@ bin/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Spring Boot
+application-*.properties
+application-*.yml
+
+# Test reports
+test-output/
+
+# Database files
+*.h2.db
+*.mv.db
+*.db
+*.sqlite
