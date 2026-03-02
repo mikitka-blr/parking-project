@@ -25,10 +25,10 @@ public class ParkingController {
 
     @GetMapping
     public List<ParkingSlotDTO> getAll(@RequestParam(required = false) Boolean occupied) {
+        // Теперь метод getSlotsByStatus будет найден
         return service.getSlotsByStatus(occupied);
     }
 
-    // Бронирование места: /api/slots/1/book
     @PostMapping("/{id}/book")
     public Reservation book(@PathVariable Long id, @RequestBody User user) {
         return service.bookSlot(id, user);

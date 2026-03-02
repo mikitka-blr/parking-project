@@ -6,8 +6,8 @@ import com.example.model.BaseParkingSlot;
 import com.example.model.Reservation;
 import com.example.model.User;
 import com.example.repository.BaseParkingSlotRepository;
-import com.example.repository.ReservationRepository;
 import com.example.repository.UserRepository;
+import com.example.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -30,41 +30,32 @@ public class ParkingService {
         this.mapper = mapper;
     }
 
-    @Transactional
-    public Reservation bookSlot(Long slotId, User user) {
-        // 1. Ищем место
-        BaseParkingSlot slot = slotRepository.findById(slotId)
-            .orElseThrow(() -> new RuntimeException("Место не найдено"));
-
-        if (slot.isOccupied()) {
-            throw new RuntimeException("Место уже занято");
-        }
-
-        // 2. Сохраняем пользователя
-        User savedUser = userRepository.save(user);
-
-        // 3. Занимаем место
-        slot.setOccupied(true);
-        slotRepository.save(slot);
-
-        // 4. Создаем бронь
-        Reservation reservation = new Reservation();
-        reservation.setUser(savedUser);
-        reservation.setSlot(slot);
-
-        return reservationRepository.save(reservation);
-    }
-
+    // Тот самый метод, который не мог найти контроллер
     public List<ParkingSlotDTO> getSlotsByStatus(Boolean occupied) {
         return slotRepository.findAll().stream()
-            .filter(slot -> occupied == null || slot.isOccupied() == occupied)
+            .filter(s -> occupied == null || s.isOccupied() == occupied)
             .map(mapper::toDTO)
             .toList();
     }
 
-    public ParkingSlotDTO getSlotById(Long id) {
-        return slotRepository.findById(id)
-            .map(mapper::toDTO)
-            .orElse(null);
+    @Transactional
+    public Reservation bookSlot(Long slotId, User user) {
+        User savedUser = userRepository.save(user);
+
+        BaseParkingSlot slot = slotRepository.findById(slotId)
+            .orElseThrow(() -> new IllegalArgumentException("Slot not found with id: " + slotId));
+
+        if (slot.isOccupied()) {
+            throw new IllegalStateException("Slot is already occupied");
+        }
+
+        slot.setOccupied(true);
+        slotRepository.save(slot);
+
+        Reservation res = new Reservation();
+        res.setUser(savedUser);
+        res.setSlot(slot);
+
+        return reservationRepository.save(res);
     }
 }

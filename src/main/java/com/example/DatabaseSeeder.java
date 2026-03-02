@@ -1,41 +1,38 @@
 package com.example;
 
+import com.example.model.ExtraService;
 import com.example.model.ParkingLot;
-import com.example.model.RegularParkingSlot;
+import com.example.repository.ExtraServiceRepository;
 import com.example.repository.ParkingLotRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
 
-    private final ParkingLotRepository parkingLotRepository;
+    // Добавлен статический логгер для замены System.out
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
 
-    public DatabaseSeeder(ParkingLotRepository parkingLotRepository) {
-        this.parkingLotRepository = parkingLotRepository;
+    private final ParkingLotRepository lotRepo;
+    private final ExtraServiceRepository serviceRepo;
+
+    public DatabaseSeeder(ParkingLotRepository lotRepo, ExtraServiceRepository serviceRepo) {
+        this.lotRepo = lotRepo;
+        this.serviceRepo = serviceRepo;
     }
 
     @Override
     public void run(String... args) {
+        ExtraService wash = new ExtraService("Car Wash", 20.0);
+        serviceRepo.save(wash);
+
         ParkingLot lot = new ParkingLot();
-        lot.setName("Центральная парковка");
-        lot.setAddress("ул. Ленина, 1");
+        lot.setName("Grand Center");
+        lotRepo.save(lot);
 
-        // Создаем готовые места
-        RegularParkingSlot slot1 = new RegularParkingSlot("A-101", false, true);
-        slot1.setParkingLot(lot);
-
-        RegularParkingSlot slot2 = new RegularParkingSlot("A-102", false, true);
-        slot2.setParkingLot(lot);
-
-        RegularParkingSlot slot3 = new RegularParkingSlot("A-103", false, false);
-        slot3.setParkingLot(lot);
-
-        lot.getSlots().add(slot1);
-        lot.getSlots().add(slot2);
-        lot.getSlots().add(slot3);
-
-        parkingLotRepository.save(lot);
-        System.out.println(">>> База заполнена: создано 3 свободных места (ID: 1, 2, 3)");
+        // Исправлено: логирование вместо вывода в консоль
+        logger.info("Database seeding completed successfully.");
     }
 }

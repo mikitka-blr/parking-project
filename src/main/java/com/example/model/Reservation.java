@@ -1,7 +1,6 @@
 package com.example.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,11 +10,13 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "reservations")
 public class Reservation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,21 +29,22 @@ public class Reservation {
     @JoinColumn(name = "slot_id")
     private BaseParkingSlot slot;
 
-    // Связь ManyToMany: Одно бронирование может содержать много услуг.
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
         name = "reservation_services",
         joinColumns = @JoinColumn(name = "reservation_id"),
         inverseJoinColumns = @JoinColumn(name = "service_id")
     )
-    private List<ExtraService> services;
+    private List<ExtraService> services = new ArrayList<>();
 
     public Reservation() {
-
+        // Explicitly defined for JPA compatibility
     }
 
     public Long getId() {
         return id; }
+    public void setId(Long id) {
+        this.id = id; }
     public User getUser() {
         return user; }
     public void setUser(User user) {
