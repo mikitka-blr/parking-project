@@ -25,7 +25,6 @@ public class ExtraService {
     private List<Reservation> reservations = new ArrayList<>();
 
     public ExtraService() {
-        // Required by JPA for entity instantiation
     }
 
     public ExtraService(String name, double price) {
@@ -34,15 +33,34 @@ public class ExtraService {
     }
 
     public Long getId() {
-        return id; }
+        return id;
+    }
+
     public void setId(Long id) {
-        this.id = id; }
+        this.id = id;
+    }
+
     public String getName() {
-        return name; }
+        return name;
+    }
+
     public void setName(String name) {
-        this.name = name; }
+        this.name = name;
+    }
+
     public double getPrice() {
-        return price; }
+        return price;
+    }
+
     public void setPrice(double price) {
-        this.price = price; }
+        this.price = price;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
 }

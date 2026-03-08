@@ -1,6 +1,8 @@
 package com.example.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -8,8 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,15 +23,24 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "slot_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "slot_id", nullable = false)
     private BaseParkingSlot slot;
 
-    @ManyToMany
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "reservation_services",
         joinColumns = @JoinColumn(name = "reservation_id"),
@@ -38,23 +49,67 @@ public class Reservation {
     private List<ExtraService> services = new ArrayList<>();
 
     public Reservation() {
-        // Explicitly defined for JPA compatibility
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public Reservation(User user, BaseParkingSlot slot,
+                       LocalDateTime startTime, LocalDateTime endTime) {
+        this.user = user;
+        this.slot = slot;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
-        return id; }
+        return id;
+    }
+
     public void setId(Long id) {
-        this.id = id; }
+        this.id = id;
+    }
+
     public User getUser() {
-        return user; }
+        return user;
+    }
+
     public void setUser(User user) {
-        this.user = user; }
+        this.user = user;
+    }
+
     public BaseParkingSlot getSlot() {
-        return slot; }
+        return slot;
+    }
+
     public void setSlot(BaseParkingSlot slot) {
-        this.slot = slot; }
+        this.slot = slot;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public List<ExtraService> getServices() {
-        return services; }
+        return services;
+    }
+
     public void setServices(List<ExtraService> services) {
-        this.services = services; }
+        this.services = services;
+    }
 }

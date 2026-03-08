@@ -7,7 +7,6 @@ public class ElectricParkingSlot extends BaseParkingSlot {
     private int chargerPower;
 
     protected ElectricParkingSlot() {
-
     }
 
     public ElectricParkingSlot(String number, boolean occupied, int chargerPower) {
@@ -17,7 +16,10 @@ public class ElectricParkingSlot extends BaseParkingSlot {
 
     @Override
     public String getSlotType() {
-        return "ELECTRIC"; }
+        return "ELECTRIC";
+    }
+
     public int getChargerPower() {
-        return chargerPower; }
+        return chargerPower;
+    }
 }

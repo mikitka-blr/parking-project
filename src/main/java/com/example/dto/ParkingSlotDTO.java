@@ -7,8 +7,8 @@ public class ParkingSlotDTO {
     private final String slotType;
     private final String additionalInfo;
 
-    public ParkingSlotDTO(Long id, String number, String status, String slotType,
-                          String additionalInfo) {
+    public ParkingSlotDTO(Long id, String number, String status,
+                          String slotType, String additionalInfo) {
         this.id = id;
         this.number = number;
         this.status = status;

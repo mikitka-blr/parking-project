@@ -14,13 +14,13 @@ public class ParkingMapper {
         String statusText = slot.isOccupied() ? "Occupied" : "Available";
         String additionalInfo = "";
 
-
         if (slot instanceof RegularParkingSlot regular) {
             additionalInfo = regular.isCovered() ? "Covered" : "Open air";
         } else if (slot instanceof ElectricParkingSlot electric) {
             additionalInfo = "Charger: " + electric.getChargerPower() + "kW";
         } else if (slot instanceof DisabledParkingSlot disabled) {
-            additionalInfo = disabled.hasWiderEntrance() ? "Wider entrance" : "Standard entrance";
+            additionalInfo = disabled.hasWiderEntrance()
+                ? "Wider entrance" : "Standard entrance";
         }
 
         return new ParkingSlotDTO(
