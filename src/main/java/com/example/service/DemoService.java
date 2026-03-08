@@ -4,12 +4,16 @@ import com.example.model.ParkingLot;
 import com.example.model.User;
 import com.example.repository.ParkingLotRepository;
 import com.example.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
 public class DemoService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DemoService.class);
 
     private final UserRepository userRepository;
     private final ParkingLotRepository parkingLotRepository;
@@ -33,16 +37,20 @@ public class DemoService {
     }
 
     public void demonstrateNPlusOneProblem() {
+        LOG.info("=== ДЕМОНСТРАЦИЯ ПРОБЛЕМЫ N+1 ===");
         List<ParkingLot> lots = parkingLotRepository.findAll();
         for (ParkingLot lot : lots) {
-            System.out.println("Парковка: " + lot.getName() + ", слотов: " + lot.getSlots().size());
+            LOG.info("Парковка: {}, слотов: {}", lot.getName(), lot.getSlots().size());
         }
+        LOG.info("=== КОНЕЦ ДЕМОНСТРАЦИИ ===");
     }
 
     public void demonstrateSolutionWithJoinFetch() {
+        LOG.info("=== РЕШЕНИЕ N+1 С JOIN FETCH ===");
         List<ParkingLot> lots = parkingLotRepository.findAllWithSlotsUsingFetch();
         for (ParkingLot lot : lots) {
-            System.out.println("Парковка: " + lot.getName() + ", слотов: " + lot.getSlots().size());
+            LOG.info("Парковка: {}, слотов: {}", lot.getName(), lot.getSlots().size());
         }
+        LOG.info("=== КОНЕЦ ДЕМОНСТРАЦИИ ===");
     }
 }

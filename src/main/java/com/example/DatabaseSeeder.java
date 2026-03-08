@@ -98,7 +98,6 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
 
         parkingLotRepository.save(mainLot);
-
         LOG.info("Создана парковка: {} с {} местами", mainLot.getName(), slots.size());
     }
 
@@ -113,7 +112,14 @@ public class DatabaseSeeder implements CommandLineRunner {
         users.get(1).setPhone("+375-33-222-22-22");
         users.get(2).setPhone("+375-25-333-33-33");
 
-        userRepository.saveAll(users);
-        LOG.info("Создано {} тестовых пользователей", users.size());
+        for (User user : users) {
+            if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
+                userRepository.save(user);
+                LOG.info("Создан пользователь: {}", user.getEmail());
+            } else {
+                LOG.info("Пользователь уже существует: {}", user.getEmail());
+            }
+        }
+        LOG.info("Проверка пользователей завершена");
     }
 }
