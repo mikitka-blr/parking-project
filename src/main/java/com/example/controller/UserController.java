@@ -35,8 +35,18 @@ public class UserController {
         return dto;
     }
 
+    private User convertToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setFullName(userDTO.getFullName());
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setActive(userDTO.isActive());
+        return user;
+    }
+
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody User user) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+        User user = convertToEntity(userDTO);
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(convertToDTO(createdUser), HttpStatus.CREATED);
     }
@@ -63,7 +73,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<UserDTO> updateUser(
+        @PathVariable Long id,
+        @RequestBody UserDTO userDTO) {
+        User user = convertToEntity(userDTO);
         User updatedUser = userService.updateUser(id, user);
         if (updatedUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
