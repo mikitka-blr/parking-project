@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.dto.UserDTO;
 import com.example.model.User;
 import com.example.service.DemoService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +19,19 @@ public class DemoController {
         this.demoService = demoService;
     }
 
+    private User convertToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setFullName(userDTO.getFullName());
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setActive(userDTO.isActive());
+        return user;
+    }
+
     @PostMapping("/error-no-transaction")
-    public String demoErrorNoTransaction(@RequestBody User user) {
+    public String demoErrorNoTransaction(@RequestBody UserDTO userDTO) {
         try {
+            User user = convertToEntity(userDTO);
             demoService.failedTransactionDemo(user);
             return "Успех";
         } catch (Exception e) {
@@ -30,8 +41,9 @@ public class DemoController {
     }
 
     @PostMapping("/success-transaction")
-    public String demoSuccessTransaction(@RequestBody User user) {
+    public String demoSuccessTransaction(@RequestBody UserDTO userDTO) {
         try {
+            User user = convertToEntity(userDTO);
             demoService.successTransactionDemo(user);
             return "УСПЕХ: И пользователь, и парковка в базе!";
         } catch (Exception e) {

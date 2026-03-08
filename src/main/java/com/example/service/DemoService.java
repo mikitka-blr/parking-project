@@ -37,20 +37,16 @@ public class DemoService {
     }
 
     public void demonstrateNPlusOneProblem() {
-        LOG.info("=== ДЕМОНСТРАЦИЯ ПРОБЛЕМЫ N+1 ===");
         List<ParkingLot> lots = parkingLotRepository.findAll();
         for (ParkingLot lot : lots) {
             LOG.info("Парковка: {}, слотов: {}", lot.getName(), lot.getSlots().size());
         }
-        LOG.info("=== КОНЕЦ ДЕМОНСТРАЦИИ ===");
     }
 
     public void demonstrateSolutionWithJoinFetch() {
-        LOG.info("=== РЕШЕНИЕ N+1 С JOIN FETCH ===");
         List<ParkingLot> lots = parkingLotRepository.findAllWithSlotsUsingFetch();
         for (ParkingLot lot : lots) {
             LOG.info("Парковка: {}, слотов: {}", lot.getName(), lot.getSlots().size());
         }
-        LOG.info("=== КОНЕЦ ДЕМОНСТРАЦИИ ===");
     }
 }
