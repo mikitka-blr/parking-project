@@ -110,4 +110,8 @@ classes/
 .idea/**/sqlDataSources.xml
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
+<<<<<<< HEAD
 .idea/**/dbnavigator.xml
+=======
+.idea/**/dbnavigator.xml
+>>>>>>> 9cb55658a1e517bcf0560d6f5e488fd6ffeecb1e
