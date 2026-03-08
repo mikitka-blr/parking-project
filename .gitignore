@@ -77,3 +77,37 @@ test-output/
 *.mv.db
 *.db
 *.sqlite
+
+### GRADLE SPECIFIC ###
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+/gradle/wrapper/gradle-wrapper.jar
+
+### YOUR PROJECT SPECIFIC ###
+# Папка с классами (если есть)
+classes/
+# Временные файлы
+*.tmp
+*.temp
+
+### ADD TO EXISTING SECTIONS ###
+# Добавьте в секцию Package Files:
+*.msi
+*.exe
+
+# Добавьте в секцию IntelliJ:
+.idea_modules/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/contentModel.xml
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml

@@ -5,7 +5,6 @@ import com.example.repository.BaseParkingSlotRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ParkingSlotService {
@@ -27,13 +26,13 @@ public class ParkingSlotService {
     public List<BaseParkingSlot> getAvailableSlots() {
         return slotRepository.findAll().stream()
             .filter(slot -> !slot.isOccupied())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<BaseParkingSlot> getSlotsByType(String type) {
         return slotRepository.findAll().stream()
             .filter(slot -> slot.getSlotType().equalsIgnoreCase(type))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Transactional
