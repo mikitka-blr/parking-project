@@ -44,7 +44,7 @@ public class UserController {
         return user;
     }
 
-    @PostMapping
+    @PostMapping  // Строка 39
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         User user = convertToEntity(userDTO);
         User createdUser = userService.createUser(user);
@@ -72,7 +72,7 @@ public class UserController {
         return new ResponseEntity<>(convertToDTO(user), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}")  // Строка 66
     public ResponseEntity<UserDTO> updateUser(
         @PathVariable Long id,
         @RequestBody UserDTO userDTO) {
