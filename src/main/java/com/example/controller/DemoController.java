@@ -1,37 +1,27 @@
 package com.example.controller;
 
 import com.example.dto.UserDTO;
+import com.example.mapper.UserMapper;
 import com.example.model.User;
 import com.example.service.DemoService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/demo")
 public class DemoController {
 
     private final DemoService demoService;
+    private final UserMapper userMapper;
 
-    public DemoController(DemoService demoService) {
+    public DemoController(DemoService demoService, UserMapper userMapper) {
         this.demoService = demoService;
-    }
-
-    private User convertToEntity(UserDTO userDTO) {
-        User user = new User();
-        user.setFullName(userDTO.getFullName());
-        user.setEmail(userDTO.getEmail());
-        user.setPhone(userDTO.getPhone());
-        user.setActive(userDTO.isActive());
-        return user;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/error-no-transaction")
     public String demoErrorNoTransaction(@RequestBody UserDTO userDTO) {
         try {
-            User user = convertToEntity(userDTO);
+            User user = userMapper.toEntity(userDTO);
             demoService.failedTransactionDemo(user);
             return "Успех";
         } catch (Exception e) {
@@ -43,7 +33,7 @@ public class DemoController {
     @PostMapping("/success-transaction")
     public String demoSuccessTransaction(@RequestBody UserDTO userDTO) {
         try {
-            User user = convertToEntity(userDTO);
+            User user = userMapper.toEntity(userDTO);
             demoService.successTransactionDemo(user);
             return "УСПЕХ: И пользователь, и парковка в базе!";
         } catch (Exception e) {
