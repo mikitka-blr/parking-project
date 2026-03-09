@@ -239,11 +239,11 @@ UNION ALL SELECT 'extra_services', COUNT(*) FROM extra_services;
 ## Проверка после транзакций
 - После проблемного запроса (без транзакции)
 ```sql
-- SELECT * FROM users WHERE email = 'problem@example.com'; -- пользователь ЕСТЬ
-- SELECT * FROM parking_lots WHERE name IS NULL; -- парковки НЕТ
+SELECT * FROM users WHERE email = 'problem@example.com'; -- пользователь ЕСТЬ
+SELECT * FROM parking_lots WHERE name IS NULL; -- парковки НЕТ
 ```
 ## После успешного запроса (с транзакцией)
 ```sql
-- SELECT * FROM users WHERE email = 'success@example.com'; -- пользователь ЕСТЬ
-- SELECT * FROM parking_lots WHERE name = 'Центральная парковка'; -- парковка ЕСТЬ
+SELECT * FROM users WHERE email = 'success@example.com'; -- пользователь ЕСТЬ
+SELECT * FROM parking_lots WHERE name = 'Центральная парковка'; -- парковка ЕСТЬ
 ```
