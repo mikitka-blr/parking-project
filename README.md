@@ -85,8 +85,8 @@ mvn checkstyle:check
 
 ## Обновления: Реляционная БД и JPA
 
-## CRUD операции
-# CREATE (POST)
+# CRUD операции
+## CREATE (POST)
 
 - POST http://localhost:8080/api/users
 
@@ -100,11 +100,11 @@ mvn checkstyle:check
     
 }
 
-# READ ALL (GET)
+## READ ALL (GET)
 
 - GET http://localhost:8080/api/users
 
-# PUT 
+## PUT 
 -  put http://localhost:8080/api/users/1
 
 {
@@ -121,9 +121,9 @@ DELETE (DELETE)
 
 - DELETE http://localhost:8080/api/users/1
 
-## Демонстрация транзакций
+# Демонстрация транзакций
 
-# Проблема (без @Transactional)
+## Проблема (без @Transactional)
 
 - POST http://localhost:8080/api/demo/error
 
@@ -139,7 +139,7 @@ DELETE (DELETE)
 
 Ответ: ОШИБКА: пользователь сохранился, а парковка нет!
 
-# Решение (с @Transactional)
+## Решение (с @Transactional)
 
 - POST http://localhost:8080/api/demo/success
 
@@ -155,38 +155,38 @@ DELETE (DELETE)
 
 Ответ: УСПЕХ: всё сохранилось!
 
-## Демонстрация N+1
+# Демонстрация N+1
 
-# Проблема
+## Проблема
 
 - GET http://localhost:8080/api/demo/nplus1
 
 В консоли: 1 + N SQL запросов
 
-# Решение
+## Решение
 
 - GET http://localhost:8080/api/demo/solution
 
 В консоли: 1 SQL запрос с JOIN
 
-## Проверка в pgAdmin
+# Проверка в pgAdmin
 
-# Все таблицы
+## Все таблицы
 sql
 
 SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
 
-# Все пользователи
+## Все пользователи
 sql
 
 SELECT id, full_name, email, phone, created_at FROM users ORDER BY id;
 
-# Все парковки
+## Все парковки
 sql
 
 SELECT * FROM parking_lots;
 
-# Все места с типами
+## Все места с типами
 sql
 
 SELECT 
@@ -206,7 +206,7 @@ LEFT JOIN electric_slots es ON ps.id = es.id
 LEFT JOIN disabled_slots ds ON ps.id = ds.id
 ORDER BY ps.id;
 
-# Проверка ManyToMany
+## Проверка ManyToMany
 sql
 
 SELECT 
@@ -221,7 +221,7 @@ LEFT JOIN reservation_services rs ON r.id = rs.reservation_id
 LEFT JOIN extra_services es ON rs.service_id = es.id
 GROUP BY r.id, u.full_name, ps.number;
 
-# Количество записей
+## Количество записей
 sql
 
 SELECT 'users' as table_name, COUNT(*) FROM users
@@ -230,13 +230,13 @@ UNION ALL SELECT 'parking_slots', COUNT(*) FROM parking_slots
 UNION ALL SELECT 'reservations', COUNT(*) FROM reservations
 UNION ALL SELECT 'extra_services', COUNT(*) FROM extra_services;
 
-# Проверка после транзакций
+## Проверка после транзакций
 - После проблемного запроса (без транзакции)
 
 - SELECT * FROM users WHERE email = 'problem@example.com'; -- пользователь ЕСТЬ
 - SELECT * FROM parking_lots WHERE name IS NULL; -- парковки НЕТ
 
-# После успешного запроса (с транзакцией)
+## После успешного запроса (с транзакцией)
 
 - SELECT * FROM users WHERE email = 'success@example.com'; -- пользователь ЕСТЬ
 - SELECT * FROM parking_lots WHERE name = 'Центральная парковка'; -- парковка ЕСТЬ
