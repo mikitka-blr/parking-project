@@ -120,7 +120,7 @@ DELETE (DELETE)
 
 ## Проблема (без @Transactional)
 
-- POST http://localhost:8080/api/demo/error
+- POST [http://localhost:8080/api/demo/error](http://localhost:8080/api/demo/error-no-transaction)
 
 ```json
 {
@@ -134,7 +134,7 @@ DELETE (DELETE)
 
 ## Решение (с @Transactional)
 
-- POST http://localhost:8080/api/demo/success
+- POST [http://localhost:8080/api/demo/success](http://localhost:8080/api/demo/ssuccess-transaction)
 
 ```json
 {
