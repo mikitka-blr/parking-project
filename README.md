@@ -91,6 +91,7 @@ mvn checkstyle:check
 - POST http://localhost:8080/api/users
 
 {
+
     "fullName": "Иван Петров",
     
     "email": "ivan@example.com",
