@@ -172,10 +172,14 @@ DELETE (DELETE)
 # Проверка в pgAdmin
 
 ## Все таблицы
+
 ```sql
+
 SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
-SELECT * FROM users;
+
 ## Все пользователи
+
+```sql
 
 SELECT id, full_name, email, phone, created_at FROM users ORDER BY id;
 
