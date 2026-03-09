@@ -110,6 +110,7 @@ mvn checkstyle:check
     "email": "ivan.updated@example.com",
     "phone": "+375-29-999-88-77"
 }
+```
 
 DELETE (DELETE)
 
@@ -127,7 +128,7 @@ DELETE (DELETE)
     "email": "problem@example.com",
     "phone": "+375-29-777-77-77"
 }
-```
+
 
 Ответ: ОШИБКА: пользователь сохранился, а парковка нет!
 
