@@ -172,23 +172,18 @@ DELETE (DELETE)
 # Проверка в pgAdmin
 
 ## Все таблицы
-sql
-
+```sql
 SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
 
 ## Все пользователи
-sql
 
 SELECT id, full_name, email, phone, created_at FROM users ORDER BY id;
 
 ## Все парковки
-sql
 
 SELECT * FROM parking_lots;
 
 ## Все места с типами
-
-{
 
 SELECT 
     ps.id,
@@ -207,11 +202,7 @@ LEFT JOIN electric_slots es ON ps.id = es.id
 LEFT JOIN disabled_slots ds ON ps.id = ds.id
 ORDER BY ps.id;
 
-}
-
 ## Проверка ManyToMany
-
-{
 
 SELECT 
     r.id as reservation_id,
@@ -225,19 +216,13 @@ LEFT JOIN reservation_services rs ON r.id = rs.reservation_id
 LEFT JOIN extra_services es ON rs.service_id = es.id
 GROUP BY r.id, u.full_name, ps.number;
 
-}
-
 ## Количество записей
-
-{
 
 SELECT 'users' as table_name, COUNT(*) FROM users
 UNION ALL SELECT 'parking_lots', COUNT(*) FROM parking_lots
 UNION ALL SELECT 'parking_slots', COUNT(*) FROM parking_slots
 UNION ALL SELECT 'reservations', COUNT(*) FROM reservations
 UNION ALL SELECT 'extra_services', COUNT(*) FROM extra_services;
-
-}
 
 ## Проверка после транзакций
 - После проблемного запроса (без транзакции)
