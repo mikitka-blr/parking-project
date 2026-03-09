@@ -174,18 +174,20 @@ DELETE (DELETE)
 ## Все таблицы
 
 ```sql
-
 SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
+```
 
 ## Все пользователи
 
 ```sql
-
 SELECT id, full_name, email, phone, created_at FROM users ORDER BY id;
+```
 
 ## Все парковки
 
+```sql
 SELECT * FROM parking_lots;
+```
 
 ## Все места с типами
 
