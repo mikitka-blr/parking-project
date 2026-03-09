@@ -89,32 +89,26 @@ mvn checkstyle:check
 ## CREATE (POST)
 
 - POST http://localhost:8080/api/users
-
+  
+```json
 {
-
     "fullName": "Иван Петров",
-    
     "email": "ivan@example.com",
-    
     "phone": "+375-29-111-22-33"
-    
 }
-
+```
 ## READ ALL (GET)
 
 - GET http://localhost:8080/api/users
 
 ## PUT 
 -  put http://localhost:8080/api/users/1
-
+  
+```json
 {
-
     "fullName": "Обновленный Иван",
-
     "email": "ivan.updated@example.com",
-    
     "phone": "+375-29-999-88-77"
-    
 }
 
 DELETE (DELETE)
@@ -127,15 +121,13 @@ DELETE (DELETE)
 
 - POST http://localhost:8080/api/demo/error
 
+```json
 {
-
     "fullName": "Проблемный Тест",
-    
     "email": "problem@example.com",
-    
     "phone": "+375-29-777-77-77"
-    
 }
+```
 
 Ответ: ОШИБКА: пользователь сохранился, а парковка нет!
 
@@ -143,15 +135,13 @@ DELETE (DELETE)
 
 - POST http://localhost:8080/api/demo/success
 
+```json
 {
-
     "fullName": "Успешный Тест",
-    
     "email": "success@example.com",
-    
     "phone": "+375-29-888-88-88"
-    
 }
+```
 
 Ответ: УСПЕХ: всё сохранилось!
 
