@@ -186,31 +186,6 @@ SELECT * FROM parking_lots;
 SELECT * FROM parking_slots;
 ```
 
-## Проверка ManyToMany
-
-```sql
-SELECT 
-    r.id as reservation_id,
-    u.full_name as user_name,
-    ps.number as slot_number,
-    STRING_AGG(es.name, ', ') as services
-FROM reservations r
-JOIN users u ON r.user_id = u.id
-JOIN parking_slots ps ON r.slot_id = ps.id
-LEFT JOIN reservation_services rs ON r.id = rs.reservation_id
-LEFT JOIN extra_services es ON rs.service_id = es.id
-GROUP BY r.id, u.full_name, ps.number;
-```
-
-## Количество записей
-
-```sql
-SELECT 'users' as table_name, COUNT(*) FROM users
-UNION ALL SELECT 'parking_lots', COUNT(*) FROM parking_lots
-UNION ALL SELECT 'parking_slots', COUNT(*) FROM parking_slots
-UNION ALL SELECT 'reservations', COUNT(*) FROM reservations
-UNION ALL SELECT 'extra_services', COUNT(*) FROM extra_services;
-```
 
 ## Проверка после транзакций
 - После проблемного запроса (без транзакции)
