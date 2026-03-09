@@ -180,25 +180,10 @@ SELECT id, full_name, email, phone, created_at FROM users ORDER BY id;
 SELECT * FROM parking_lots;
 ```
 
-## Все места с типами
+## Все места
 
 ```sql
-SELECT 
-    ps.id,
-    ps.number,
-    ps.occupied,
-    pl.name as parking_lot,
-    CASE 
-        WHEN rs.id IS NOT NULL THEN 'Regular' 
-        WHEN es.id IS NOT NULL THEN 'Electric'
-        WHEN ds.id IS NOT NULL THEN 'Disabled' 
-    END as type
-FROM parking_slots ps
-LEFT JOIN parking_lots pl ON ps.parking_lot_id = pl.id
-LEFT JOIN regular_slots rs ON ps.id = rs.id
-LEFT JOIN electric_slots es ON ps.id = es.id
-LEFT JOIN disabled_slots ds ON ps.id = ds.id
-ORDER BY ps.id;
+SELECT * FROM parking_slots;
 ```
 
 ## Проверка ManyToMany
@@ -231,10 +216,14 @@ UNION ALL SELECT 'extra_services', COUNT(*) FROM extra_services;
 - После проблемного запроса (без транзакции)
 ```sql
 SELECT * FROM users WHERE email = 'problem@example.com'; -- пользователь ЕСТЬ
+```
+```sql
 SELECT * FROM parking_lots WHERE name IS NULL; -- парковки НЕТ
 ```
 ## После успешного запроса (с транзакцией)
 ```sql
 SELECT * FROM users WHERE email = 'success@example.com'; -- пользователь ЕСТЬ
+```
+```sql
 SELECT * FROM parking_lots WHERE name = 'Центральная парковка'; -- парковка ЕСТЬ
 ```
