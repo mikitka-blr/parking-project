@@ -150,7 +150,7 @@ DELETE (DELETE)
 
 ## Проблема
 
-- GET http://localhost:8080/api/demo/nplus1
+- GET http://localhost:8080/api/demo/n-plus-one
 
 В консоли: 1 + N SQL запросов
 
