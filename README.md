@@ -118,6 +118,27 @@ DELETE (DELETE)
 
 # Демонстрация транзакций
 
+# Демонстрация бронирования
+
+## Бронирование мест
+
+- GET	/api/demo/slots/available	Получить список свободных мест
+- POST	/api/demo/book	Забронировать место
+- GET	/api/demo/users/{userId}/reservations	Получить брони пользователя
+
+## Примеры запросов в Postman
+
+- GET http://localhost:8080/api/demo/slots/available
+```json
+  {
+    "userId": 1,
+    "slotId": 3,
+    "startTime": "2026-03-10T10:00:00",
+    "endTime": "2026-03-10T12:00:00",
+    "serviceIds": [1, 2]
+}
+```
+
 ## Проблема (без @Transactional)
 
 - POST http://localhost:8080/api/demo/error-no-transaction
