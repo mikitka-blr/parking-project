@@ -116,8 +116,6 @@ DELETE (DELETE)
 
 - DELETE http://localhost:8080/api/users/1
 
-# Демонстрация транзакций
-
 # Демонстрация бронирования
 
 ## Бронирование мест
@@ -138,6 +136,8 @@ DELETE (DELETE)
     "serviceIds": [1, 2]
 }
 ```
+
+# Демонстрация транзакций
 
 ## Проблема (без @Transactional)
 
