@@ -8,8 +8,7 @@ public abstract class BaseUser {
     private boolean active;
 
     public Long getId() {
-        return id;
-    }
+        return id; }
 
     public void setId(Long id) {
         this.id = id;

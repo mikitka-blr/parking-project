@@ -6,6 +6,7 @@ import com.example.model.ElectricParkingSlot;
 import com.example.model.ExtraService;
 import com.example.model.ParkingLot;
 import com.example.model.RegularParkingSlot;
+import com.example.model.Reservation;
 import com.example.model.User;
 import com.example.repository.BaseParkingSlotRepository;
 import com.example.repository.ExtraServiceRepository;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,8 +51,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     public void run(String... args) {
         clearDatabase();
         createExtraServices();
-        createParkingLotWithSlots();
+        createParkingLot();
         createTestUsers();
+        createTestReservations();
         LOG.info("База данных инициализирована");
     }
 
@@ -64,62 +67,78 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     private void createExtraServices() {
         List<ExtraService> services = Arrays.asList(
-            new ExtraService("Мойка автомобиля", 15.0),
+            new ExtraService("Мойка", 15.0),
             new ExtraService("Шиномонтаж", 20.0),
-            new ExtraService("Зарядка электромобиля", 10.0),
-            new ExtraService("Пылесос", 5.0),
-            new ExtraService("Подкачка шин", 3.0)
+            new ExtraService("Зарядка", 10.0)
         );
         extraServiceRepository.saveAll(services);
-        LOG.info("Создано {} дополнительных услуг", services.size());
+        LOG.info("Создано {} услуг", services.size());
     }
 
-    private void createParkingLotWithSlots() {
-        ParkingLot mainLot = new ParkingLot(
+    private void createParkingLot() {
+        ParkingLot lot = new ParkingLot(
             "Центральная парковка",
             "г. Минск, ул. Центральная, 1"
         );
 
-        List<BaseParkingSlot> slots = Arrays.asList(
-            new RegularParkingSlot("A1", false, true),
-            new RegularParkingSlot("A2", false, true),
-            new RegularParkingSlot("A3", true, false),
-            new RegularParkingSlot("A4", false, false),
-            new RegularParkingSlot("A5", true, true),
-            new ElectricParkingSlot("E1", false, 50),
-            new ElectricParkingSlot("E2", true, 75),
-            new ElectricParkingSlot("E3", false, 100),
-            new DisabledParkingSlot("D1", false, true),
-            new DisabledParkingSlot("D2", true, true)
-        );
+        lot.addSlot(new RegularParkingSlot("A1", false, true));
+        lot.addSlot(new RegularParkingSlot("A2", false, true));
+        lot.addSlot(new RegularParkingSlot("A3", true, false));
+        lot.addSlot(new ElectricParkingSlot("E1", false, 50));
+        lot.addSlot(new ElectricParkingSlot("E2", true, 75));
+        lot.addSlot(new DisabledParkingSlot("D1", false, true));
 
-        for (BaseParkingSlot slot : slots) {
-            slot.setParkingLot(mainLot);
-        }
-
-        parkingLotRepository.save(mainLot);
-        LOG.info("Создана парковка: {} с {} местами", mainLot.getName(), slots.size());
+        parkingLotRepository.save(lot);
+        LOG.info("Создана парковка с {} местами", lot.getSlots().size());
     }
 
     private void createTestUsers() {
         List<User> users = Arrays.asList(
             new User("Иван Петров", "ivan@example.com"),
-            new User("Мария Сидорова", "maria@example.com"),
-            new User("Алексей Иванов", "alex@example.com")
+            new User("Мария Сидорова", "maria@example.com")
         );
 
         users.get(0).setPhone("+375-29-111-11-11");
         users.get(1).setPhone("+375-33-222-22-22");
-        users.get(2).setPhone("+375-25-333-33-33");
 
         for (User user : users) {
             if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
                 userRepository.save(user);
                 LOG.info("Создан пользователь: {}", user.getEmail());
-            } else {
-                LOG.info("Пользователь уже существует: {}", user.getEmail());
             }
         }
-        LOG.info("Проверка пользователей завершена");
+    }
+
+    private void createTestReservations() {
+        List<User> users = userRepository.findAll();
+        List<BaseParkingSlot> slots = slotRepository.findAll();
+        List<ExtraService> services = extraServiceRepository.findAll();
+
+        if (users.isEmpty() || slots.isEmpty() || services.isEmpty()) {
+            return;
+        }
+
+        User user = users.get(0);
+        BaseParkingSlot slot = slots.stream()
+            .filter(s -> !s.isOccupied())
+            .findFirst()
+            .orElse(null);
+
+        if (slot != null) {
+            Reservation reservation = new Reservation(
+                user,
+                slot,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(1).plusHours(3)
+            );
+
+            reservation.setServices(List.of(services.get(0)));
+
+            slot.setOccupied(true);
+            slotRepository.save(slot);
+
+            reservationRepository.save(reservation);
+            LOG.info("Создана тестовая бронь для {}", user.getFullName());
+        }
     }
 }

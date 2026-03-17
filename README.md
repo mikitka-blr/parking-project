@@ -85,25 +85,156 @@ mvn checkstyle:check
 
 ## Обновления: Реляционная БД и JPA
 
-### 7. Работа с базой данных (JPA)
-- **СУБД:** Подключена H2 Database (In-memory).
-- **Сложные связи:**
-    - **OneToMany:** Парковка (`ParkingLot`) и места (`BaseParkingSlot`).
-    - **ManyToMany:** Бронирование (`Reservation`) и доп. услуги (`ExtraService`).
-- **Наследование:** Реализована стратегия `JOINED` для иерархии парковочных мест.
+# CRUD операции
+## CREATE (POST)
 
-### 8. Оптимизация и надежность
-- **Решение N+1:** Использование `@EntityGraph` в `BaseParkingSlotRepository` для загрузки данных о парковке одним запросом.
-- **Транзакции:** Использование `@Transactional` в `ParkingService` для обеспечения атомарности бронирования (откат всех изменений при ошибке).
+- POST http://localhost:8080/api/users
 
-## Инструкция по проверке БД
+```json
+{
+    "fullName": "Иван Петров",
+    "email": "ivan@example.com",
+    "phone": "+375-29-111-22-33"
+}
+```
+## READ ALL (GET)
 
-1. **Консоль H2:** Доступна после запуска по адресу `http://localhost:8080/h2-console`.
-    - JDBC URL: `jdbc:h2:mem:parkingdb`
-    - User: `sa` (пароль пустой).
+- GET http://localhost:8080/api/users
 
-2. **Тест транзакций:**
-   Отправьте POST-запрос на `/api/slots/999/book`. Так как ID 999 не существует, произойдет ошибка. Проверьте таблицу `USERS` — она останется пустой (откат сработал).
+## PUT
+-  put http://localhost:8080/api/users/1
 
-3. **Тест ManyToMany:**
-   После бронирования проверьте таблицу `RESERVATION_SERVICES`, где хранятся связи между вашей бронью и услугами.
+```json
+{
+    "fullName": "Обновленный Иван",
+    "email": "ivan.updated@example.com",
+    "phone": "+375-29-999-88-77"
+}
+```
+
+DELETE (DELETE)
+
+- DELETE http://localhost:8080/api/users/1
+
+# Демонстрация транзакций
+
+## Проблема (без @Transactional)
+
+- POST http://localhost:8080/api/demo/error
+
+```json
+{
+    "fullName": "Проблемный Тест",
+    "email": "problem@example.com",
+    "phone": "+375-29-777-77-77"
+}
+```
+
+Ответ: ОШИБКА: пользователь сохранился, а парковка нет!
+
+## Решение (с @Transactional)
+
+- POST http://localhost:8080/api/demo/success
+
+```json
+{
+    "fullName": "Успешный Тест",
+    "email": "success@example.com",
+    "phone": "+375-29-888-88-88"
+}
+```
+
+Ответ: УСПЕХ: всё сохранилось!
+
+# Демонстрация N+1
+
+## Проблема
+
+- GET http://localhost:8080/api/demo/nplus1
+
+В консоли: 1 + N SQL запросов
+
+## Решение
+
+- GET http://localhost:8080/api/demo/solution
+
+В консоли: 1 SQL запрос с JOIN
+
+# Проверка в pgAdmin
+
+## Все таблицы
+
+```sql
+SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
+```
+
+## Все пользователи
+
+```sql
+SELECT id, full_name, email, phone, created_at FROM users ORDER BY id;
+```
+
+## Все парковки
+
+```sql
+SELECT * FROM parking_lots;
+```
+
+## Все места с типами
+
+```sql
+SELECT 
+    ps.id,
+    ps.number,
+    ps.occupied,
+    pl.name as parking_lot,
+    CASE 
+        WHEN rs.id IS NOT NULL THEN 'Regular' 
+        WHEN es.id IS NOT NULL THEN 'Electric'
+        WHEN ds.id IS NOT NULL THEN 'Disabled' 
+    END as type
+FROM parking_slots ps
+LEFT JOIN parking_lots pl ON ps.parking_lot_id = pl.id
+LEFT JOIN regular_slots rs ON ps.id = rs.id
+LEFT JOIN electric_slots es ON ps.id = es.id
+LEFT JOIN disabled_slots ds ON ps.id = ds.id
+ORDER BY ps.id;
+```
+
+## Проверка ManyToMany
+
+```sql
+SELECT 
+    r.id as reservation_id,
+    u.full_name as user_name,
+    ps.number as slot_number,
+    STRING_AGG(es.name, ', ') as services
+FROM reservations r
+JOIN users u ON r.user_id = u.id
+JOIN parking_slots ps ON r.slot_id = ps.id
+LEFT JOIN reservation_services rs ON r.id = rs.reservation_id
+LEFT JOIN extra_services es ON rs.service_id = es.id
+GROUP BY r.id, u.full_name, ps.number;
+```
+
+## Количество записей
+
+```sql
+SELECT 'users' as table_name, COUNT(*) FROM users
+UNION ALL SELECT 'parking_lots', COUNT(*) FROM parking_lots
+UNION ALL SELECT 'parking_slots', COUNT(*) FROM parking_slots
+UNION ALL SELECT 'reservations', COUNT(*) FROM reservations
+UNION ALL SELECT 'extra_services', COUNT(*) FROM extra_services;
+```
+
+## Проверка после транзакций
+- После проблемного запроса (без транзакции)
+```sql
+SELECT * FROM users WHERE email = 'problem@example.com'; -- пользователь ЕСТЬ
+SELECT * FROM parking_lots WHERE name IS NULL; -- парковки НЕТ
+```
+## После успешного запроса (с транзакцией)
+```sql
+SELECT * FROM users WHERE email = 'success@example.com'; -- пользователь ЕСТЬ
+SELECT * FROM parking_lots WHERE name = 'Центральная парковка'; -- парковка ЕСТЬ
+```
