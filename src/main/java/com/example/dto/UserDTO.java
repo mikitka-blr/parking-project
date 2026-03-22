@@ -1,17 +1,60 @@
 package com.example.dto;
 
-import com.example.model.BaseUser;
-
-public class UserDTO extends BaseUser {
+public class UserDTO {
+    private Long id;
+    private String fullName;
+    private String email;
+    private String phone;
+    private boolean active;
 
     public UserDTO() {
     }
 
     public UserDTO(Long id, String fullName, String email, String phone, boolean active) {
-        setId(id);
-        setFullName(fullName);
-        setEmail(email);
-        setPhone(phone);
-        setActive(active);
+        this.id = id;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.active = active;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
