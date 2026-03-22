@@ -4,7 +4,6 @@ import com.example.dto.ReservationDTO;
 import com.example.model.Reservation;
 import org.springframework.stereotype.Component;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class ReservationMapper {
@@ -34,8 +33,11 @@ public class ReservationMapper {
     }
 
     public List<ReservationDTO> toDTOList(List<Reservation> reservations) {
+        if (reservations == null) {
+            return List.of();
+        }
         return reservations.stream()
             .map(this::toDTO)
-            .collect(Collectors.toList());
+            .toList();  // ✅ без Collectors
     }
 }

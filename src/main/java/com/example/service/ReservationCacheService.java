@@ -2,6 +2,8 @@ package com.example.service;
 
 import com.example.cache.CacheKey;
 import com.example.model.Reservation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -9,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class ReservationCacheService {
@@ -26,8 +26,7 @@ public class ReservationCacheService {
     public Page<Reservation> getPageFromCache(String name, LocalDateTime startDate, int page, int size) {
         List<Reservation> list = getFromCache(name, startDate, page, size);
         if (list != null) {
-            LOG.info("Данные получены из кэша. Ключ: {}",
-                new CacheKey(name, startDate, page, size));
+            LOG.debug("Данные получены из кэша");
             return new PageImpl<>(list);
         }
         return null;
@@ -36,12 +35,13 @@ public class ReservationCacheService {
     public void putInCache(String name, LocalDateTime startDate, int page, int size, List<Reservation> reservations) {
         CacheKey key = new CacheKey(name, startDate, page, size);
         cache.put(key, reservations);
-        LOG.info("Добавлено в кэш. Ключ: {}, размер: {}", key, reservations.size());
+        LOG.debug("Добавлено в кэш. Размер: {}", reservations.size());
     }
 
     public void clearCache() {
+        int size = cache.size();
         cache.clear();
-        LOG.info("Кэш очищен. Размер: {}", cache.size());
+        LOG.info("Кэш очищен. Размер: {}", size);
     }
 
     public int cacheSize() {
