@@ -1,11 +1,9 @@
 package com.example.controller;
 
 import com.example.dto.BookingRequest;
-import com.example.dto.UserDTO;
 import com.example.mapper.UserMapper;
 import com.example.model.BaseParkingSlot;
 import com.example.model.Reservation;
-import com.example.model.User;
 import com.example.service.DemoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,49 +27,13 @@ public class DemoController {
         this.userMapper = userMapper;
     }
 
-    @PostMapping("/error-no-transaction")
-    public String demoErrorNoTransaction(@RequestBody UserDTO userDTO) {
-        try {
-            User user = userMapper.toEntity(userDTO);
-            demoService.failedTransactionDemo(user);
-            return "Успех";
-        } catch (Exception e) {
-            return "ОШИБКА (Без транзакции): " + e.getMessage()
-                + ". Проверьте pgAdmin — пользователь сохранился";
-        }
-    }
-
-    @PostMapping("/success-transaction")
-    public String demoSuccessTransaction(@RequestBody UserDTO userDTO) {
-        try {
-            User user = userMapper.toEntity(userDTO);
-            demoService.successTransactionDemo(user);
-            return "УСПЕХ: И пользователь, и парковка в базе";
-        } catch (Exception e) {
-            return "ОШИБКА: " + e.getMessage();
-        }
-    }
-
-    @GetMapping("/n-plus-one")
-    public String demonstrateNPlusOne() {
-        demoService.demonstrateNPlusOneProblem();
-        return "Проблема N+1 выведена в консоль";
-    }
-
-    @GetMapping("/solution")
-    public String demonstrateSolution() {
-        demoService.demonstrateSolution();
-        return "Решение N+1 выведено в консоль";
-    }
-
     @PostMapping("/book")
-    public ResponseEntity<?> bookSlot(@RequestBody BookingRequest request) {
-        try {
-            Reservation reservation = demoService.bookSlot(request);
-            return new ResponseEntity<>(reservation, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Reservation> bookSlot(@RequestBody BookingRequest request) {
+        Reservation reservation = demoService.bookSlot(request);
+        if (reservation == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
     @GetMapping("/users/{userId}/reservations")
