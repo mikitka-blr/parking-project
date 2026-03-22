@@ -1,6 +1,6 @@
 package com.example.model;
 
-public abstract class BaseUser {
+public class BaseUser {
     private Long id;
     private String fullName;
     private String email;
@@ -8,7 +8,8 @@ public abstract class BaseUser {
     private boolean active;
 
     public Long getId() {
-        return id; }
+        return id;
+    }
 
     public void setId(Long id) {
         this.id = id;
