@@ -4,18 +4,14 @@ public class UserDTO {
     private Long id;
     private String fullName;
     private String email;
-    private String phone;
-    private boolean active;
 
     public UserDTO() {
     }
 
-    public UserDTO(Long id, String fullName, String email, String phone, boolean active) {
+    public UserDTO(Long id, String fullName, String email) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
-        this.phone = phone;
-        this.active = active;
     }
 
     public Long getId() {
@@ -40,21 +36,5 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }
