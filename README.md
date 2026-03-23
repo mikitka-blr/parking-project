@@ -239,6 +239,14 @@ SELECT * FROM users WHERE email = 'success@example.com'; -- пользовате
 SELECT * FROM parking_lots WHERE name = 'Центральная парковка'; -- парковка ЕСТЬ
 ```
 
+# JPQL запрос с фильтрацией
+
+GET http://localhost:8080/api/search/reservations/jpql?name=Иван&startDate=2026-03-01T00:00:00
+
+# Native query 
+
+GET http://localhost:8080/api/search/reservations/native?name=Иван&startDate=2026-03-01T00:00:00
+
 # Демонстрация кэширования
 
 ## 1. Первый запрос (нет в кэше)
