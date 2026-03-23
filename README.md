@@ -238,3 +238,17 @@ SELECT * FROM parking_lots WHERE name IS NULL; -- парковки НЕТ
 SELECT * FROM users WHERE email = 'success@example.com'; -- пользователь ЕСТЬ
 SELECT * FROM parking_lots WHERE name = 'Центральная парковка'; -- парковка ЕСТЬ
 ```
+
+#Демонстрация кэширования
+
+##1. Первый запрос (нет в кэше)
+
+GET http://localhost:8080/api/search/reservations?name=Иван&startDate=2026-03-01T00:00:00&page=0&size=2
+
+##2. Второй такой же запрос (из кэша)
+
+GET http://localhost:8080/api/search/reservations?name=Иван&startDate=2026-03-01T00:00:00&page=0&size=2
+
+##3. Проверка размера кэша
+
+GET http://localhost:8080/api/search/cache/info
