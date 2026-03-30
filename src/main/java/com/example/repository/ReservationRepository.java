@@ -17,16 +17,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findBySlotId(Long slotId);
 
-    // 1. Сложный JPQL запрос с фильтрацией по вложенной сущности
     @Query("SELECT r FROM Reservation r "
-        + "JOIN r.user u "
+        + "JOIN FETCH r.slot s "
+        + "JOIN FETCH r.user u "
         + "WHERE u.fullName LIKE %:name% "
         + "AND r.startTime >= :startDate")
     List<Reservation> findReservationsByUserNameAndDate(
         @Param("name") String name,
         @Param("startDate") LocalDateTime startDate);
 
-    // 2. Аналогичный запрос через native query
     @Query(value = "SELECT r.* FROM reservations r "
         + "JOIN users u ON r.user_id = u.id "
         + "WHERE u.full_name ILIKE CONCAT('%', :name, '%') "
@@ -36,9 +35,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         @Param("name") String name,
         @Param("startDate") LocalDateTime startDate);
 
-    // 3. JPQL с пагинацией
     @Query("SELECT r FROM Reservation r "
-        + "JOIN r.user u "
+        + "JOIN FETCH r.slot s "
+        + "JOIN FETCH r.user u "
         + "WHERE u.fullName LIKE %:name% "
         + "AND r.startTime >= :startDate")
     Page<Reservation> findReservationsWithPagination(
@@ -46,7 +45,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         @Param("startDate") LocalDateTime startDate,
         Pageable pageable);
 
-    // Native query с пагинацией
     @Query(value = "SELECT r.* FROM reservations r "
         + "JOIN users u ON r.user_id = u.id "
         + "WHERE u.full_name ILIKE CONCAT('%', :name, '%') "
@@ -56,6 +54,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             + "WHERE u.full_name ILIKE CONCAT('%', :name, '%') "
             + "AND r.start_time >= :startDate",
         nativeQuery = true)
+
     Page<Reservation> findReservationsNativeWithPagination(
         @Param("name") String name,
         @Param("startDate") LocalDateTime startDate,

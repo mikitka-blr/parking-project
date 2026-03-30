@@ -1,5 +1,6 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,6 +31,7 @@ public abstract class BaseParkingSlot {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parking_lot_id")
+    @JsonIgnore  // ← ДОБАВИТЬ ЭТУ АННОТАЦИЮ
     private ParkingLot parkingLot;
 
     @Column(name = "created_at", nullable = false)

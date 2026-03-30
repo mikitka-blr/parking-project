@@ -1,6 +1,9 @@
 package com.example.service;
 
 import com.example.dto.BookingRequest;
+import com.example.exception.SlotAlreadyOccupiedException;
+import com.example.exception.SlotNotFoundException;
+import com.example.exception.UserNotFoundException;
 import com.example.model.BaseParkingSlot;
 import com.example.model.ExtraService;
 import com.example.model.Reservation;
@@ -45,11 +48,14 @@ public class DemoService {
 
     @Transactional
     public Reservation bookSlot(BookingRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElse(null);
-        BaseParkingSlot slot = slotRepository.findById(request.getSlotId()).orElse(null);
+        User user = userRepository.findById(request.getUserId())
+            .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + request.getUserId() + " не найден"));
 
-        if (user == null || slot == null || slot.isOccupied()) {
-            return null;
+        BaseParkingSlot slot = slotRepository.findById(request.getSlotId())
+            .orElseThrow(() -> new SlotNotFoundException("Место с id " + request.getSlotId() + " не найдено"));
+
+        if (slot.isOccupied()) {
+            throw new SlotAlreadyOccupiedException("Место " + slot.getNumber() + " уже занято");
         }
 
         Reservation reservation = new Reservation(
@@ -67,7 +73,12 @@ public class DemoService {
         slot.setOccupied(true);
         slotRepository.save(slot);
 
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+
+        cacheService.clearCache();
+        LOG.info("Кэш очищен после добавления новой брони");
+
+        return saved;
     }
 
     public Page<Reservation> searchReservationsWithCache(
@@ -84,6 +95,7 @@ public class DemoService {
 
         LOG.info("Данных нет в кэше, запрос в БД");
         Pageable pageable = PageRequest.of(page, size);
+
         Page<Reservation> result = reservationRepository.findReservationsWithPagination(
             name, startDate, pageable);
 

@@ -1,11 +1,7 @@
 package com.example.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +18,7 @@ public class ExtraService {
     private double price;
 
     @ManyToMany(mappedBy = "services")
+    @JsonIgnore  // ← ДОБАВИТЬ ЭТУ СТРОКУ
     private List<Reservation> reservations = new ArrayList<>();
 
     public ExtraService() {

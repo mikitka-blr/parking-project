@@ -1,29 +1,32 @@
 package com.example.dto;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class BookingRequest {
+
+    @NotNull(message = "ID пользователя обязателен")
+    @Positive(message = "ID пользователя должен быть положительным")
     private Long userId;
+
+    @NotNull(message = "ID места обязателен")
+    @Positive(message = "ID места должен быть положительным")
     private Long slotId;
+
+    @NotNull(message = "Время начала обязательно")
+    @Future(message = "Время начала должно быть в будущем")
     private LocalDateTime startTime;
+
+    @NotNull(message = "Время окончания обязательно")
+    @Future(message = "Время окончания должно быть в будущем")
     private LocalDateTime endTime;
+
     private List<Long> serviceIds;
 
-    /**
-     * Пустой конструктор для десериализации JSON.
-     */
     public BookingRequest() {
-        // Конструктор без параметров
-    }
-
-    public BookingRequest(Long userId, Long slotId, LocalDateTime startTime,
-                          LocalDateTime endTime, List<Long> serviceIds) {
-        this.userId = userId;
-        this.slotId = slotId;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.serviceIds = serviceIds;
     }
 
     public Long getUserId() {
