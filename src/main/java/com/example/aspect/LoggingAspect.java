@@ -29,8 +29,10 @@ public class LoggingAspect {
             return result;
         } catch (Exception e) {
             long executionTime = System.currentTimeMillis() - start;
-            LOG.error("Ошибка в методе {}.{}() после {} ms: {}", className, methodName, executionTime, e.getMessage());
-            throw e;
+            LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
+                className, methodName, executionTime, e.getMessage(), e);
+            throw new RuntimeException("Ошибка при выполнении метода " + className + "." + methodName
+                + ": " + e.getMessage(), e);
         }
     }
 }

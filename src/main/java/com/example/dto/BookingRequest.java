@@ -26,7 +26,21 @@ public class BookingRequest {
 
     private List<Long> serviceIds;
 
+    /**
+     * Пустой конструктор для JPA и Jackson.
+     * Необходим для десериализации JSON в объект.
+     */
     public BookingRequest() {
+        // Конструктор без параметров
+    }
+
+    public BookingRequest(Long userId, Long slotId, LocalDateTime startTime,
+                          LocalDateTime endTime, List<Long> serviceIds) {
+        this.userId = userId;
+        this.slotId = slotId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.serviceIds = serviceIds;
     }
 
     public Long getUserId() {
