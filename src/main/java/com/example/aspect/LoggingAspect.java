@@ -31,10 +31,12 @@ public class LoggingAspect {
             long executionTime = System.currentTimeMillis() - start;
             LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
                 className, methodName, executionTime, e.getMessage(), e);
+
             // Перевыбрасываем с контекстной информацией
             throw new RuntimeException(
-                String.format("Ошибка при выполнении метода %s.%s() после %d ms: %s",
-                    className, methodName, executionTime, e.getMessage()), e);
+                String.format("[%s.%s] Ошибка после %d ms: %s",
+                    className, methodName, executionTime, e.getMessage()),
+                e);
         }
     }
 }
