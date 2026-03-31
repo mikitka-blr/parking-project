@@ -30,9 +30,18 @@ public class LoggingAspect {
             return result;
         } catch (Exception e) {
             long executionTime = System.currentTimeMillis() - start;
+
+            // Логируем ошибку с полным контекстом
             LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
                 className, methodName, executionTime, e.getMessage(), e);
-            throw new ServiceException(className, methodName, executionTime, e);
+
+            // Создаем новое исключение с контекстом
+            ServiceException serviceException = new ServiceException(className, methodName, executionTime, e);
+
+            // Логируем, что перевыбрасываем
+            LOG.debug("Перевыбрасывание ServiceException с контекстом: {}", serviceException.getMessage());
+
+            throw serviceException;
         }
     }
 }
