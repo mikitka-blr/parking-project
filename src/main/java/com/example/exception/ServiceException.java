@@ -7,8 +7,8 @@ public class ServiceException extends RuntimeException {
     private final long executionTime;
 
     public ServiceException(String className, String methodName, long executionTime, Throwable cause) {
-        super(String.format("Ошибка при выполнении метода %s.%s() после %d ms",
-            className, methodName, executionTime), cause);
+        super(String.format("Ошибка при выполнении метода %s.%s() после %d ms: %s",
+            className, methodName, executionTime, cause.getMessage()), cause);
         this.className = className;
         this.methodName = methodName;
         this.executionTime = executionTime;
