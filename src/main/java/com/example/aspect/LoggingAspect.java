@@ -1,5 +1,6 @@
 package com.example.aspect;
 
+import com.example.exception.ServiceException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,8 +32,7 @@ public class LoggingAspect {
             long executionTime = System.currentTimeMillis() - start;
             LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
                 className, methodName, executionTime, e.getMessage(), e);
-            throw new RuntimeException("Ошибка при выполнении метода " + className + "." + methodName
-                + ": " + e.getMessage(), e);
+            throw new ServiceException(className, methodName, executionTime, e);
         }
     }
 }
