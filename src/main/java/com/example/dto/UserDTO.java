@@ -2,7 +2,6 @@ package com.example.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class UserDTO {
@@ -17,19 +16,15 @@ public class UserDTO {
     @Email(message = "Некорректный формат email")
     private String email;
 
-    @Pattern(regexp = "^\\+?[0-9\\s\\-]{10,20}$", message = "Некорректный формат телефона")
-    private String phone;
-
     private boolean active;
 
     public UserDTO() {
     }
 
-    public UserDTO(Long id, String fullName, String email, String phone, boolean active) {
+    public UserDTO(Long id, String fullName, String email, boolean active) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
-        this.phone = phone;
         this.active = active;
     }
 
@@ -55,14 +50,6 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public boolean isActive() {
