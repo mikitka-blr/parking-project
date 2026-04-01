@@ -1,15 +1,7 @@
 package com.example.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -18,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseUser {  // ← extends BaseUser
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,42 +48,52 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
 
+    @Override
     public String getFullName() {
         return fullName;
     }
 
+    @Override
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
+    @Override
     public String getEmail() {
         return email;
     }
 
+    @Override
     public void setEmail(String email) {
         this.email = email;
     }
 
+    @Override
     public String getPhone() {
         return phone;
     }
 
+    @Override
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
+    @Override
     public boolean isActive() {
         return active;
     }
 
+    @Override
     public void setActive(boolean active) {
         this.active = active;
     }
