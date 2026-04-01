@@ -1,6 +1,5 @@
 package com.example.aspect;
 
-import com.example.exception.ServiceException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -30,18 +29,9 @@ public class LoggingAspect {
             return result;
         } catch (Exception e) {
             long executionTime = System.currentTimeMillis() - start;
-
-            // Логируем ошибку с полным контекстом
             LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
                 className, methodName, executionTime, e.getMessage(), e);
-
-            // Создаем новое исключение с контекстом
-            ServiceException serviceException = new ServiceException(className, methodName, executionTime, e);
-
-            // Логируем, что перевыбрасываем
-            LOG.debug("Перевыбрасывание ServiceException с контекстом: {}", serviceException.getMessage());
-
-            throw serviceException;
+            throw e;
         }
     }
 }

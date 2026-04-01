@@ -38,6 +38,6 @@ public class ReservationMapper {
         }
         return reservations.stream()
             .map(this::toDTO)
-            .toList();  // ✅ без Collectors
+            .toList();
     }
 }

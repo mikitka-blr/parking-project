@@ -1,6 +1,7 @@
 package com.example.exception;
 
 import com.example.dto.ErrorResponse;
+import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,42 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<ErrorResponse> handleServiceException(ServiceException ex) {
+        LOG.error("ServiceException: {}", ex.getMessage(), ex);
+
+        Throwable cause = ex.getCause();
+        int status;
+        String code;
+        String message;
+
+        if (cause instanceof UserNotFoundException) {
+            status = HttpStatus.NOT_FOUND.value();
+            code = "USER_NOT_FOUND";
+            message = cause.getMessage();
+        } else if (cause instanceof SlotNotFoundException) {
+            status = HttpStatus.NOT_FOUND.value();
+            code = "SLOT_NOT_FOUND";
+            message = cause.getMessage();
+        } else if (cause instanceof SlotAlreadyOccupiedException) {
+            status = HttpStatus.CONFLICT.value();
+            code = "SLOT_ALREADY_OCCUPIED";
+            message = cause.getMessage();
+        } else {
+            status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+            code = "INTERNAL_SERVER_ERROR";
+            message = "Внутренняя ошибка сервера";
+        }
+
+        ErrorResponse error = new ErrorResponse(
+            status,
+            code,
+            message,
+            LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.valueOf(status));
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {

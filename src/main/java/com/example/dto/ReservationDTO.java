@@ -27,7 +27,6 @@ public class ReservationDTO {
         this.status = "ACTIVE";
     }
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
