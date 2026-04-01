@@ -31,8 +31,6 @@ public class LoggingAspect {
         } catch (Exception e) {
             long executionTime = System.currentTimeMillis() - start;
 
-            // НЕ логируем ошибку здесь (логирование будет в GlobalExceptionHandler)
-            // Просто перевыбрасываем с контекстной информацией
             throw new ServiceExecutionException(
                 String.format("Ошибка при выполнении метода %s.%s() после %d ms: %s",
                     className, methodName, executionTime, e.getMessage()),

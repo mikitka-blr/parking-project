@@ -69,6 +69,19 @@ public class DemoController {
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
+    @GetMapping("/slots")
+    @Operation(
+        summary = "Все места",
+        description = "Возвращает список всех парковочных мест (включая занятые)"
+    )
+    public ResponseEntity<List<BaseParkingSlot>> getAllSlots() {
+        List<BaseParkingSlot> slots = demoService.getAllSlots();
+        if (slots.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(slots, HttpStatus.OK);
+    }
+
     @GetMapping("/slots/available")
     @Operation(
         summary = "Свободные места",

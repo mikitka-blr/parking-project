@@ -81,6 +81,10 @@ public class DemoService {
         return saved;
     }
 
+    public List<BaseParkingSlot> getAllSlots() {
+        return slotRepository.findAll();
+    }
+
     public Page<Reservation> searchReservationsWithCache(
         String name,
         LocalDateTime startDate,
