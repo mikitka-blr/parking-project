@@ -98,8 +98,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             new User("Мария Сидорова", "maria@example.com")
         );
 
-        users.get(0).setPhone("+375-29-111-11-11");
-        users.get(1).setPhone("+375-33-222-22-22");
+        // Телефон удален
 
         for (User user : users) {
             if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
