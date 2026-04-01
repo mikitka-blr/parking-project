@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseUser {  // ← extends BaseUser
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,52 +48,42 @@ public class User extends BaseUser {  // ← extends BaseUser
         this.createdAt = LocalDateTime.now();
     }
 
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }
 
-    @Override
     public String getFullName() {
         return fullName;
     }
 
-    @Override
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
-    @Override
     public String getEmail() {
         return email;
     }
 
-    @Override
     public void setEmail(String email) {
         this.email = email;
     }
 
-    @Override
     public String getPhone() {
         return phone;
     }
 
-    @Override
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    @Override
     public boolean isActive() {
         return active;
     }
 
-    @Override
     public void setActive(boolean active) {
         this.active = active;
     }
