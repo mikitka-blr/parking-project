@@ -1,5 +1,6 @@
 package com.example.aspect;
 
+import com.example.exception.ServiceExecutionException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -30,13 +31,12 @@ public class LoggingAspect {
         } catch (Throwable e) {
             long executionTime = System.currentTimeMillis() - start;
 
-            // Мы убрали LOG.error(...), чтобы не нарушать правило "Log or Rethrow".
-            // Вся необходимая информация передается в конструктор RuntimeException.
-            // Оригинальное исключение 'e' передается вторым аргументом для сохранения Stack Trace.
-            throw new RuntimeException(
-                String.format("Ошибка при выполнении метода %s.%s() после %d ms: %s",
-                    className, methodName, executionTime, e.getMessage()),
-                e);
+            // Логируем ошибку
+            LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
+                className, methodName, executionTime, e.getMessage(), e);
+
+            // Бросаем специфичное исключение с контекстом
+            throw new ServiceExecutionException(className, methodName, executionTime, e);
         }
     }
 }
