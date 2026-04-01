@@ -31,16 +31,12 @@ public class LoggingAspect {
         } catch (Exception e) {
             long executionTime = System.currentTimeMillis() - start;
 
-            // Логируем ошибку с контекстом
-            LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
-                className, methodName, executionTime, e.getMessage(), e);
-
-            // Создаем исключение с контекстной информацией
-            String contextMessage = String.format("Ошибка при выполнении метода %s.%s() после %d ms: %s",
-                className, methodName, executionTime, e.getMessage());
-
-            // Перевыбрасываем с контекстом и оригинальной причиной
-            throw new ServiceExecutionException(contextMessage, e);
+            // НЕ логируем ошибку здесь (логирование будет в GlobalExceptionHandler)
+            // Просто перевыбрасываем с контекстной информацией
+            throw new ServiceExecutionException(
+                String.format("Ошибка при выполнении метода %s.%s() после %d ms: %s",
+                    className, methodName, executionTime, e.getMessage()),
+                e);
         }
     }
 }
