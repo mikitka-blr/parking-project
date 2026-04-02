@@ -1,9 +1,6 @@
 package com.example.exception;
 
-/**
- * Исключение, выбрасываемое при ошибках в сервисном слое,
- * перехваченных через LoggingAspect.
- */
+
 public class ServiceExecutionException extends RuntimeException {
 
     private final String className;
