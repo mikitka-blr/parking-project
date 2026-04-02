@@ -1,11 +1,14 @@
 package com.example.aspect;
 
-import com.example.exception.ServiceExecutionException;
+import com.example.exception.SlotAlreadyOccupiedException;
+import com.example.exception.SlotNotFoundException;
+import com.example.exception.UserNotFoundException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -30,12 +33,37 @@ public class LoggingAspect {
             return result;
         } catch (Exception e) {
             long executionTime = System.currentTimeMillis() - start;
-            LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
-                className, methodName, executionTime, e.getMessage(), e);
-            throw new ServiceExecutionException(
-                String.format("Ошибка при выполнении метода %s.%s() после %d ms: %s",
-                    className, methodName, executionTime, e.getMessage()),
-                e);
+
+            int status = getHttpStatus(e);
+            String errorCode = getErrorCode(e);
+
+            LOG.error("Ошибка {} ({}): {} после {} ms",
+                status, errorCode, e.getMessage(), executionTime, e);
+
+            throw e;
         }
+    }
+
+    private int getHttpStatus(Exception e) {
+        if (e instanceof UserNotFoundException || e instanceof SlotNotFoundException) {
+            return HttpStatus.NOT_FOUND.value();
+        }
+        if (e instanceof SlotAlreadyOccupiedException) {
+            return HttpStatus.CONFLICT.value();
+        }
+        return HttpStatus.INTERNAL_SERVER_ERROR.value();
+    }
+
+    private String getErrorCode(Exception e) {
+        if (e instanceof UserNotFoundException) {
+            return "USER_NOT_FOUND";
+        }
+        if (e instanceof SlotNotFoundException) {
+            return "SLOT_NOT_FOUND";
+        }
+        if (e instanceof SlotAlreadyOccupiedException) {
+            return "SLOT_ALREADY_OCCUPIED";
+        }
+        return "INTERNAL_SERVER_ERROR";
     }
 }
