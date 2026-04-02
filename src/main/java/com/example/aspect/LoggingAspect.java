@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
+@SuppressWarnings("squid:S2139")
 public class LoggingAspect {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoggingAspect.class);
@@ -30,7 +31,6 @@ public class LoggingAspect {
             return result;
         } catch (Exception e) {
             long executionTime = System.currentTimeMillis() - start;
-            // Логируем и перевыбрасываем с контекстом
             LOG.error("Ошибка в методе {}.{}() после {} ms: {}",
                 className, methodName, executionTime, e.getMessage(), e);
             throw new ServiceExecutionException(
