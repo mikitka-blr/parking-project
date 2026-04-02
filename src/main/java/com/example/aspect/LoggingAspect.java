@@ -1,5 +1,6 @@
 package com.example.aspect;
 
+import com.example.exception.ServiceExecutionException;
 import com.example.exception.SlotAlreadyOccupiedException;
 import com.example.exception.SlotNotFoundException;
 import com.example.exception.UserNotFoundException;
@@ -37,10 +38,11 @@ public class LoggingAspect {
             int status = getHttpStatus(e);
             String errorCode = getErrorCode(e);
 
-            LOG.error("Ошибка {} ({}): {} после {} ms",
-                status, errorCode, e.getMessage(), executionTime, e);
-
-            throw e;
+            // Только перевыбрасываем с контекстом, НЕ логируем
+            throw new ServiceExecutionException(
+                String.format("Ошибка %d (%s): %s после %d ms",
+                    status, errorCode, e.getMessage(), executionTime),
+                e);
         }
     }
 
