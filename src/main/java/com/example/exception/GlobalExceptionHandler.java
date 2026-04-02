@@ -1,6 +1,8 @@
 package com.example.exception;
 
 import com.example.dto.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,8 +16,12 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(ServiceExecutionException.class)
     public ResponseEntity<ErrorResponse> handleServiceExecutionException(ServiceExecutionException ex) {
+        LOG.error("{}", ex.getMessage(), ex);
+
         Throwable cause = ex.getCause();
         int status;
         String code;
@@ -45,6 +51,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
+        LOG.error("Ошибка 404 (USER_NOT_FOUND): {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse(
             HttpStatus.NOT_FOUND.value(),
             "USER_NOT_FOUND",
@@ -56,6 +63,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SlotNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleSlotNotFound(SlotNotFoundException ex) {
+        LOG.error("Ошибка 404 (SLOT_NOT_FOUND): {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse(
             HttpStatus.NOT_FOUND.value(),
             "SLOT_NOT_FOUND",
@@ -67,6 +75,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SlotAlreadyOccupiedException.class)
     public ResponseEntity<ErrorResponse> handleSlotAlreadyOccupied(SlotAlreadyOccupiedException ex) {
+        LOG.error("Ошибка 409 (SLOT_ALREADY_OCCUPIED): {}", ex.getMessage());
         ErrorResponse error = new ErrorResponse(
             HttpStatus.CONFLICT.value(),
             "SLOT_ALREADY_OCCUPIED",
@@ -82,6 +91,7 @@ public class GlobalExceptionHandler {
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
+        LOG.error("Ошибка 400 (VALIDATION_ERROR): {}", errors.toString());
         ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             "VALIDATION_ERROR",
@@ -93,6 +103,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        LOG.error("Ошибка 500 (INTERNAL_SERVER_ERROR): {}", ex.getMessage(), ex);
         ErrorResponse error = new ErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             "INTERNAL_SERVER_ERROR",

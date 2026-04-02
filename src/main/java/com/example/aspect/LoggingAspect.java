@@ -38,7 +38,6 @@ public class LoggingAspect {
             int status = getHttpStatus(e);
             String errorCode = getErrorCode(e);
 
-            // Только перевыбрасываем с контекстом, НЕ логируем
             throw new ServiceExecutionException(
                 String.format("Ошибка %d (%s): %s после %d ms",
                     status, errorCode, e.getMessage(), executionTime),
