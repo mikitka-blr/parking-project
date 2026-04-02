@@ -8,6 +8,10 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
+
+            <throwableConverter class="ch.qos.logback.classic.pattern.ThrowableProxyConverter">
+                <length>0</length>
+            </throwableConverter>
         </encoder>
     </appender>
 
@@ -21,8 +25,16 @@
         </rollingPolicy>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
+            <throwableConverter class="ch.qos.logback.classic.pattern.ThrowableProxyConverter">
+                <length>0</length>
+            </throwableConverter>
         </encoder>
     </appender>
+
+    <logger name="com.example.exception" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
 
     <logger name="com.example" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>

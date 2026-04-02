@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-@SuppressWarnings("squid:S2139")
 public class LoggingAspect {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoggingAspect.class);

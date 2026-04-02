@@ -34,7 +34,6 @@ public class UserService {
             .map(user -> {
                 user.setFullName(userDetails.getFullName());
                 user.setEmail(userDetails.getEmail());
-                // phone удален
                 return userRepository.save(user);
             })
             .orElse(null);
