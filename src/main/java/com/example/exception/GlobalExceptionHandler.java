@@ -91,11 +91,18 @@ public class GlobalExceptionHandler {
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
-        LOG.error("Ошибка 400 (VALIDATION_ERROR): {}", errors.toString());
+
+        // Исправлено: проверка на пустоту и убран лишний toString()
+        if (!errors.isEmpty()) {
+            LOG.error("Ошибка 400 (VALIDATION_ERROR): {}", errors);
+        } else {
+            LOG.error("Ошибка 400 (VALIDATION_ERROR)");
+        }
+
         ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             "VALIDATION_ERROR",
-            "Ошибка валидации: " + errors.toString(),
+            "Ошибка валидации: " + errors,
             LocalDateTime.now()
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
