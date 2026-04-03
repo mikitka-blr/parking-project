@@ -92,7 +92,6 @@ public class GlobalExceptionHandler {
             errors.put(error.getField(), error.getDefaultMessage());
         }
 
-        // Исправлено: проверка на пустоту и убран лишний toString()
         if (!errors.isEmpty()) {
             LOG.error("Ошибка 400 (VALIDATION_ERROR): {}", errors);
         } else {

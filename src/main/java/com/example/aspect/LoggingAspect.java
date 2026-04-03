@@ -34,7 +34,6 @@ public class LoggingAspect {
             return result;
         } catch (Exception e) {
             long executionTime = System.currentTimeMillis() - start;
-
             int status = getHttpStatus(e);
             String errorCode = getErrorCode(e);
 
