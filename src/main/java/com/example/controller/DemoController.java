@@ -54,6 +54,20 @@ public class DemoController {
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
+    @PostMapping("/book/bulk-tx")
+    @Operation(summary = "Массовое бронирование (Транзакционно)", description = "Добавляет несколько броней. В случае ошибки на одной из них, все изменения откатываются (имеем гарантию @Transactional).")
+    public ResponseEntity<List<Reservation>> bookSlotsBulkTx(@Valid @RequestBody List<BookingRequest> requests) {
+        List<Reservation> reservations = demoService.bookSlotsBulkTransactional(requests);
+        return new ResponseEntity<>(reservations, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/book/bulk-notx")
+    @Operation(summary = "Массовое бронирование (Без транзакции на весь список)", description = "Добавляет несколько броней. В случае ошибки на середине списка, предыдущие успеют сохраниться.")
+    public ResponseEntity<List<Reservation>> bookSlotsBulkNoTx(@Valid @RequestBody List<BookingRequest> requests) {
+        List<Reservation> reservations = demoService.bookSlotsBulkNonTransactional(requests);
+        return new ResponseEntity<>(reservations, HttpStatus.CREATED);
+    }
+
     @GetMapping("/users/{userId}/reservations")
     @Operation(
         summary = "Брони пользователя",

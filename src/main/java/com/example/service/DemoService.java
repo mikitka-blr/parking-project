@@ -81,6 +81,23 @@ public class DemoService {
         return saved;
     }
 
+    @Transactional
+    public List<Reservation> bookSlotsBulkTransactional(List<BookingRequest> requests) {
+        return java.util.Optional.ofNullable(requests)
+            .orElseGet(java.util.Collections::emptyList)
+            .stream()
+            .map(this::bookSlot)
+            .toList();
+    }
+
+    public List<Reservation> bookSlotsBulkNonTransactional(List<BookingRequest> requests) {
+        return java.util.Optional.ofNullable(requests)
+            .orElseGet(java.util.Collections::emptyList)
+            .stream()
+            .map(this::bookSlot)
+            .toList();
+    }
+
     public List<BaseParkingSlot> getAllSlots() {
         return slotRepository.findAll();
     }
