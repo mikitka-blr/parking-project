@@ -27,11 +27,9 @@ import java.util.List;
 public class DemoController {
 
     private final DemoService demoService;
-    private final UserMapper userMapper;
-
-    public DemoController(DemoService demoService, UserMapper userMapper) {
+    
+    public DemoController(DemoService demoService) {
         this.demoService = demoService;
-        this.userMapper = userMapper;
     }
 
     @PostMapping("/book")

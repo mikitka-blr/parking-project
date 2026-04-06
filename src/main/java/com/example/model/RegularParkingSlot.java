@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 public class RegularParkingSlot extends BaseParkingSlot {
     private boolean isCovered;
 
-    protected RegularParkingSlot() {
+    public RegularParkingSlot() {
     }
 
     public RegularParkingSlot(String number, boolean occupied, boolean isCovered) {

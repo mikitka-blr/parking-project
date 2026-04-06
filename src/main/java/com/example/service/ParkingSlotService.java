@@ -31,7 +31,7 @@ public class ParkingSlotService {
 
     public List<BaseParkingSlot> getSlotsByType(String type) {
         return slotRepository.findAll().stream()
-            .filter(slot -> slot.getSlotType().equalsIgnoreCase(type))
+            .filter(slot -> slot.getSlotType() != null && slot.getSlotType().equalsIgnoreCase(type))
             .toList();
     }
 
