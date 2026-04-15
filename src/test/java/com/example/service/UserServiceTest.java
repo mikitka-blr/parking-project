@@ -22,6 +22,12 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private com.example.repository.ReservationRepository reservationRepository;
+
+    @Mock
+    private com.example.repository.BaseParkingSlotRepository slotRepository;
+
     @InjectMocks
     private UserService userService;
 
@@ -95,8 +101,44 @@ class UserServiceTest {
     @Test
     void deleteUser_Found() {
         when(userRepository.existsById(1L)).thenReturn(true);
+        when(reservationRepository.findByUserId(1L)).thenReturn(List.of());
+
         boolean result = userService.deleteUser(1L);
         assertTrue(result);
+        verify(userRepository).deleteById(1L);
+        verify(reservationRepository).findByUserId(1L);
+    }
+
+    @Test
+    void deleteUser_WithReservationsAndSlot() {
+        com.example.model.Reservation res = new com.example.model.Reservation();
+        com.example.model.BaseParkingSlot slot = new com.example.model.RegularParkingSlot();
+        slot.setOccupied(true);
+        res.setSlot(slot);
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(reservationRepository.findByUserId(1L)).thenReturn(List.of(res));
+
+        boolean result = userService.deleteUser(1L);
+        assertTrue(result);
+        assertFalse(slot.isOccupied());
+        verify(slotRepository).save(slot);
+        verify(reservationRepository).delete(res);
+        verify(userRepository).deleteById(1L);
+    }
+
+    @Test
+    void deleteUser_WithReservationsAndNoSlot() {
+        com.example.model.Reservation res = new com.example.model.Reservation();
+        res.setSlot(null);
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(reservationRepository.findByUserId(1L)).thenReturn(List.of(res));
+
+        boolean result = userService.deleteUser(1L);
+        assertTrue(result);
+        verify(slotRepository, never()).save(any());
+        verify(reservationRepository).delete(res);
         verify(userRepository).deleteById(1L);
     }
 
@@ -108,4 +150,3 @@ class UserServiceTest {
         verify(userRepository, never()).deleteById(1L);
     }
 }
-

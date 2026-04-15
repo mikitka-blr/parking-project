@@ -90,6 +90,20 @@ public class DemoService {
             .toList();
     }
 
+    @Transactional
+    public void freeSlot(Long slotId) {
+        BaseParkingSlot slot = slotRepository.findById(slotId)
+            .orElseThrow(() -> new SlotNotFoundException("Место с id " + slotId + " не найдено"));
+        slot.setOccupied(false);
+        slotRepository.save(slot);
+
+        List<Reservation> reservations = reservationRepository.findBySlotId(slotId);
+        reservationRepository.deleteAll(reservations);
+
+        cacheService.clearCache();
+        LOG.info("Кэш очищен после освобождения места");
+    }
+
     public List<Reservation> bookSlotsBulkNonTransactional(List<BookingRequest> requests) {
         return java.util.Optional.ofNullable(requests)
             .orElseGet(java.util.Collections::emptyList)

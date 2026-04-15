@@ -220,4 +220,28 @@ class DemoServiceTest {
         demoService.getCacheSize();
         verify(cacheService).cacheSize();
     }
+
+    @Test
+    void testFreeSlot_Success() {
+        when(slotRepository.findById(1L)).thenReturn(Optional.of(slot2)); // slot2 is occupied
+        when(reservationRepository.findBySlotId(1L)).thenReturn(List.of(new Reservation()));
+
+        demoService.freeSlot(1L);
+
+        verify(slot2).setOccupied(false);
+        verify(slotRepository).save(slot2);
+        verify(reservationRepository).deleteAll(anyList());
+        verify(cacheService).clearCache();
+    }
+
+    @Test
+    void testFreeSlot_SlotNotFound() {
+        when(slotRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(com.example.exception.SlotNotFoundException.class, () -> demoService.freeSlot(999L));
+        
+        verify(slotRepository, never()).save(any());
+        verify(reservationRepository, never()).deleteAll(anyList());
+        verify(cacheService, never()).clearCache();
+    }
 }

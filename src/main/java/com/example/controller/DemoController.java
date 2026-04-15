@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.dto.BookingRequest;
-import com.example.mapper.UserMapper;
 import com.example.model.BaseParkingSlot;
 import com.example.model.Reservation;
 import com.example.service.DemoService;
@@ -53,17 +52,26 @@ public class DemoController {
     }
 
     @PostMapping("/book/bulk-tx")
-    @Operation(summary = "Массовое бронирование (Транзакционно)", description = "Добавляет несколько броней. В случае ошибки на одной из них, все изменения откатываются (имеем гарантию @Transactional).")
+    @Operation(summary = "Массовое бронирование (Транзакционно)",
+        description = "Добавляет несколько броней. В случае ошибки на одной из них, все изменения откатываются.")
     public ResponseEntity<List<Reservation>> bookSlotsBulkTx(@Valid @RequestBody List<BookingRequest> requests) {
         List<Reservation> reservations = demoService.bookSlotsBulkTransactional(requests);
         return new ResponseEntity<>(reservations, HttpStatus.CREATED);
     }
 
     @PostMapping("/book/bulk-notx")
-    @Operation(summary = "Массовое бронирование (Без транзакции на весь список)", description = "Добавляет несколько броней. В случае ошибки на середине списка, предыдущие успеют сохраниться.")
+    @Operation(summary = "Массовое бронирование (Без транзакции на весь список)",
+        description = "Добавляет несколько броней. В случае ошибки на середине списка, предыдущие успеют сохраниться.")
     public ResponseEntity<List<Reservation>> bookSlotsBulkNoTx(@Valid @RequestBody List<BookingRequest> requests) {
         List<Reservation> reservations = demoService.bookSlotsBulkNonTransactional(requests);
         return new ResponseEntity<>(reservations, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/free-slot/{slotId}")
+    @Operation(summary = "Освободить место", description = "Удаляет все активные брони для места и освобождает его")
+    public ResponseEntity<Void> freeSlot(@Parameter(description = "ID места", example = "1") @PathVariable Long slotId) {
+        demoService.freeSlot(slotId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/users/{userId}/reservations")

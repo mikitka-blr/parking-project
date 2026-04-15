@@ -49,12 +49,17 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
+        if (parkingLotRepository.count() > 0) {
+            LOG.info("База данных уже содержит данные, пропускаем инициализацию");
+            return;
+        }
         clearDatabase();
         createExtraServices();
         createParkingLot();
         createTestUsers();
         createTestReservations();
-        LOG.info("База данных инициализирована");
+
+        LOG.info("Скрипт DatabaseSeeder отключен, чтобы сохранить данные после перезапуска");
     }
 
     private void clearDatabase() {

@@ -10,9 +10,15 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final com.example.repository.ReservationRepository reservationRepository;
+    private final com.example.repository.BaseParkingSlotRepository slotRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       com.example.repository.ReservationRepository reservationRepository,
+                       com.example.repository.BaseParkingSlotRepository slotRepository) {
         this.userRepository = userRepository;
+        this.reservationRepository = reservationRepository;
+        this.slotRepository = slotRepository;
     }
 
     @Transactional
@@ -42,6 +48,15 @@ public class UserService {
     @Transactional
     public boolean deleteUser(Long id) {
         if (userRepository.existsById(id)) {
+            List<com.example.model.Reservation> userReservations = reservationRepository.findByUserId(id);
+            for (com.example.model.Reservation res : userReservations) {
+                com.example.model.BaseParkingSlot slot = res.getSlot();
+                if (slot != null) {
+                    slot.setOccupied(false);
+                    slotRepository.save(slot);
+                }
+                reservationRepository.delete(res);
+            }
             userRepository.deleteById(id);
             return true;
         }
