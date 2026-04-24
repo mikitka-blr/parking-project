@@ -24,12 +24,11 @@ public class AsyncController {
         this.asyncTaskService = asyncTaskService;
         this.counterService = counterService;
     }
-
-    // 1. Асинхронный запуск операции (Возвращает ID задачи)
+    
     @PostMapping("/bulk")
     public ResponseEntity<Map<String, String>> submitBulkBooking(@RequestBody List<BookingRequest> requests) {
-        String taskId = asyncTaskService.submitBulkBooking(requests);
-        asyncTaskService.processBulkBookingAsync(taskId, requests); // Вызов через прокси Спринга (@Async сработает)
+        String taskId = asyncTaskService.submitBulkBooking();
+        asyncTaskService.processBulkBookingAsync(taskId, requests); 
         
         Map<String, String> response = new HashMap<>();
         response.put("taskId", taskId);
@@ -37,7 +36,6 @@ public class AsyncController {
         return ResponseEntity.accepted().body(response);
     }
 
-    // 1.1 Получить статус задачи
     @GetMapping("/bulk/{taskId}")
     public ResponseEntity<Map<String, String>> getBulkBookingStatus(@PathVariable String taskId) {
         String status = asyncTaskService.getTaskStatus(taskId);
@@ -47,26 +45,24 @@ public class AsyncController {
         return ResponseEntity.ok(response);
     }
 
-    // 3. Демонстрация Race Condition (Многопоточное обращение к счетчикам)
     @PostMapping("/race-condition")
     public ResponseEntity<Map<String, Integer>> testRaceCondition(@RequestParam(defaultValue = "1000") int increments) {
         counterService.reset();
         
-        // Создаем пул на 50 потоков (ExecutorService)
-        ExecutorService executor = Executors.newFixedThreadPool(50);
-        
-        for (int i = 0; i < increments; i++) {
-            executor.submit(() -> {
-                counterService.incrementUnsafe(); // Небезопасный счётчик
-                counterService.incrementSafe();   // Потокобезопасный счётчик (AtomicInteger)
-            });
-        }
-        
-        executor.shutdown();
-        try {
-            executor.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        try (ExecutorService executor = Executors.newFixedThreadPool(50)) {
+            for (int i = 0; i < increments; i++) {
+                executor.submit(() -> {
+                    counterService.incrementUnsafe();
+                    counterService.incrementSafe();
+                });
+            }
+            
+            executor.shutdown();
+            try {
+                executor.awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
         
         Map<String, Integer> results = new HashMap<>();

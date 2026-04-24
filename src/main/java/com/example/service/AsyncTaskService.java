@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -17,7 +16,6 @@ public class AsyncTaskService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AsyncTaskService.class);
     
-    // Хранение статусов задач
     private final Map<String, String> taskStatuses = new ConcurrentHashMap<>();
     
     private final DemoService demoService;
@@ -28,7 +26,7 @@ public class AsyncTaskService {
         this.counterService = counterService;
     }
 
-    public String submitBulkBooking(List<BookingRequest> requests) {
+    public String submitBulkBooking() {
         String taskId = UUID.randomUUID().toString();
         taskStatuses.put(taskId, "SUBMITTED");
         return taskId;
@@ -40,13 +38,10 @@ public class AsyncTaskService {
         LOG.info("Запуск задачи {} в потоке {}", taskId, Thread.currentThread().getName());
         
         try {
-            // Имитация долгой операции (например, сложной обработки, проверок 5 секунд)
             Thread.sleep(20000);
             
-            // Вызов транзакционного метода (булк операция) 
             demoService.bookSlotsBulkTransactional(requests);
             
-            // Увеличиваем счетчики
             for (int i = 0; i < requests.size(); i++) {
                 counterService.incrementUnsafe();
                 counterService.incrementSafe();
@@ -54,6 +49,10 @@ public class AsyncTaskService {
 
             taskStatuses.put(taskId, "COMPLETED");
             LOG.info("Задача {} успешно завершена", taskId);
+        } catch (InterruptedException e) {
+            LOG.error("Задача {} была прервана", taskId, e);
+            taskStatuses.put(taskId, "FAILED");
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             LOG.error("Ошибка при выполнении задачи {}: {}", taskId, e.getMessage());
             taskStatuses.put(taskId, "FAILED");

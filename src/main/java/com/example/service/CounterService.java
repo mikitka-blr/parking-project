@@ -10,10 +10,9 @@ public class CounterService {
     private final AtomicInteger safeCounter = new AtomicInteger(0);
 
     public void incrementUnsafe() {
-        // Имитация race condition: чтение, затем запись
         int temp = unsafeCounter;
         try {
-            Thread.sleep(1); // Увеличиваем вероятность перекрытия потоков
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
