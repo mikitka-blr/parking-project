@@ -69,7 +69,8 @@ public class DemoController {
 
     @PostMapping("/free-slot/{slotId}")
     @Operation(summary = "Освободить место", description = "Удаляет все активные брони для места и освобождает его")
-    public ResponseEntity<Void> freeSlot(@Parameter(description = "ID места", example = "1") @PathVariable Long slotId) {
+    public ResponseEntity<Void> freeSlot(@Parameter(description = "ID места", example = "1")
+                                             @PathVariable Long slotId) {
         demoService.freeSlot(slotId);
         return ResponseEntity.ok().build();
     }
