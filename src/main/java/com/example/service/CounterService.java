@@ -10,13 +10,7 @@ public class CounterService {
     private final AtomicInteger safeCounter = new AtomicInteger(0);
 
     public void incrementUnsafe() {
-        int temp = unsafeCounter;
-        try {
-            Thread.sleep(1);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        unsafeCounter = temp + 1;
+        unsafeCounter++;
     }
 
     public void incrementSafe() {
