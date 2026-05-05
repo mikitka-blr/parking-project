@@ -49,32 +49,31 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        if (parkingLotRepository.count() > 0) {
-            LOG.info("База данных уже содержит данные, пропускаем инициализацию");
-            return;
-        }
+        // Форсированная пересевка: очищаем и создаем тестовые данные
+        LOG.info("Запуск DatabaseSeeder: выполняется очистка и пересев тестовых данных");
         clearDatabase();
         createExtraServices();
         createParkingLot();
         createTestUsers();
         createTestReservations();
 
-        LOG.info("Скрипт DatabaseSeeder отключен, чтобы сохранить данные после перезапуска");
+        LOG.info("DatabaseSeeder завершён: тестовые данные пересозданы");
     }
 
     private void clearDatabase() {
         reservationRepository.deleteAll();
-        userRepository.deleteAll();
+        // Не удаляем пользователей при каждом старте, чтобы вручную созданные пользователи сохранялись
+        // userRepository.deleteAll();
         slotRepository.deleteAll();
         parkingLotRepository.deleteAll();
         extraServiceRepository.deleteAll();
     }
 
     private void createExtraServices() {
+        // Убираем опцию зарядки из дополнительных услуг
         List<ExtraService> services = Arrays.asList(
             new ExtraService("Мойка", 15.0),
-            new ExtraService("Шиномонтаж", 20.0),
-            new ExtraService("Зарядка", 10.0)
+            new ExtraService("Шиномонтаж", 20.0)
         );
         extraServiceRepository.saveAll(services);
         LOG.info("Создано {} услуг", services.size());
@@ -85,13 +84,22 @@ public class DatabaseSeeder implements CommandLineRunner {
             "Центральная парковка",
             "г. Минск, ул. Центральная, 1"
         );
-
-        lot.addSlot(new RegularParkingSlot("A1", false, true));
-        lot.addSlot(new RegularParkingSlot("A2", false, true));
-        lot.addSlot(new RegularParkingSlot("A3", true, false));
-        lot.addSlot(new ElectricParkingSlot("E1", false, 50));
-        lot.addSlot(new ElectricParkingSlot("E2", true, 75));
-        lot.addSlot(new DisabledParkingSlot("D1", false, true));
+        // Создаем по 10 мест каждого типа
+        for (int i = 1; i <= 10; i++) {
+            String num = String.format("R%02d", i);
+            boolean covered = (i % 2 == 0);
+            lot.addSlot(new RegularParkingSlot(num, false, covered));
+        }
+        for (int i = 1; i <= 10; i++) {
+            String num = String.format("E%02d", i);
+            int charger = 50 + (i % 3) * 10;
+            lot.addSlot(new ElectricParkingSlot(num, false, charger));
+        }
+        for (int i = 1; i <= 10; i++) {
+            String num = String.format("D%02d", i);
+            boolean wider = (i % 2 == 1);
+            lot.addSlot(new DisabledParkingSlot(num, false, wider));
+        }
 
         parkingLotRepository.save(lot);
         LOG.info("Создана парковка с {} местами", lot.getSlots().size());

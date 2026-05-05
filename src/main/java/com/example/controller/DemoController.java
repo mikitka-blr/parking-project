@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dto.BookingRequest;
 import com.example.model.BaseParkingSlot;
 import com.example.model.Reservation;
+import com.example.model.ExtraService;
 import com.example.service.DemoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -75,6 +76,13 @@ public class DemoController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/book/{reservationId}")
+    @Operation(summary = "Обновить бронь", description = "Обновляет время активной брони")
+    public ResponseEntity<Reservation> updateReservation(@PathVariable Long reservationId, @Valid @RequestBody BookingRequest request) {
+        Reservation reservation = demoService.updateReservation(reservationId, request);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
+    }
+
     @GetMapping("/users/{userId}/reservations")
     @Operation(
         summary = "Брони пользователя",
@@ -114,5 +122,15 @@ public class DemoController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(slots, HttpStatus.OK);
+    }
+
+    @GetMapping("/services")
+    @Operation(summary = "Дополнительные услуги", description = "Возвращает все дополнительные услуги")
+    public ResponseEntity<List<ExtraService>> getExtraServices() {
+        List<ExtraService> services = demoService.getAllExtraServices();
+        if (services.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(services, HttpStatus.OK);
     }
 }

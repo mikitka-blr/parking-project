@@ -11,6 +11,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +27,20 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "slot_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private BaseParkingSlot slot;
 
     @Column(name = "start_time", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startTime;
 
     @Column(name = "end_time", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endTime;
 
     @Column(name = "created_at", nullable = false)
@@ -46,6 +52,7 @@ public class Reservation {
         joinColumns = @JoinColumn(name = "reservation_id"),
         inverseJoinColumns = @JoinColumn(name = "service_id")
     )
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<ExtraService> services = new ArrayList<>();
 
     public Reservation() {

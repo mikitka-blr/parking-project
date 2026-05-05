@@ -104,6 +104,21 @@ public class DemoService {
         LOG.info("Кэш очищен после освобождения места");
     }
 
+    @Transactional
+    public Reservation updateReservation(Long reservationId, BookingRequest request) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new RuntimeException("Бронь не найдена"));
+        if (request.getStartTime() != null) {
+            reservation.setStartTime(request.getStartTime());
+        }
+        if (request.getEndTime() != null) {
+            reservation.setEndTime(request.getEndTime());
+        }
+        Reservation saved = reservationRepository.save(reservation);
+        cacheService.clearCache();
+        return saved;
+    }
+
     public List<Reservation> bookSlotsBulkNonTransactional(List<BookingRequest> requests) {
         return java.util.Optional.ofNullable(requests)
             .orElseGet(java.util.Collections::emptyList)
@@ -153,6 +168,10 @@ public class DemoService {
 
     public List<BaseParkingSlot> getAvailableSlots() {
         return slotRepository.findByOccupied(false);
+    }
+
+    public List<ExtraService> getAllExtraServices() {
+        return extraServiceRepository.findAll();
     }
 
     public int getCacheSize() {
