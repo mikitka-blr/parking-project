@@ -34,6 +34,19 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public User findByIdentifier(String identifier) {
+        if (identifier == null) return null;
+        String id = identifier.trim();
+        User byEmail = userRepository.findByEmail(id).orElse(null);
+        if (byEmail != null) return byEmail;
+        User byName = userRepository.findByFullNameIgnoreCase(id).orElse(null);
+        return byName;
+    }
+
     @Transactional
     public User updateUser(Long id, User userDetails) {
         return userRepository.findById(id)

@@ -16,6 +16,7 @@ public class UserMapper {
         dto.setFullName(user.getFullName());
         dto.setEmail(user.getEmail());
         dto.setActive(user.isActive());
+        // do not expose password in DTO response
         return dto;
     }
 

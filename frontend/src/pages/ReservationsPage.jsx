@@ -13,7 +13,6 @@ export default function ReservationsPage() {
     const [editForm, setEditForm] = useState({ startTime: '', endTime: '' });
     const location = useLocation();
 
-    // Состояния для формы новой брони
     const [availableSlots, setAvailableSlots] = useState([]);
     const [extraServices, setExtraServices] = useState([]);
     const [form, setForm] = useState({
@@ -23,7 +22,6 @@ export default function ReservationsPage() {
         serviceIds: []
     });
 
-    // Загрузка пользователей и свободных мест
     useEffect(() => {
         api.get('/users').then(res => {
             if (res.data) setUsers(res.data);
@@ -31,7 +29,6 @@ export default function ReservationsPage() {
 
         fetchAvailableSlots();
         fetchExtraServices();
-        // Если пришли с выбором слота — предварительно заполним поле
         const pre = location.state?.slotId;
         const cur = localStorage.getItem('currentUserId');
         if (cur) setSelectedUserId(cur);
@@ -75,7 +72,6 @@ export default function ReservationsPage() {
         fetchUserReservations(selectedUserId);
     }, [selectedUserId]);
 
-    // enforce user scope: if logged in as normal user, lock selectedUserId to currentUserId
     useEffect(() => {
         const isAdmin = localStorage.getItem('isAdmin') === 'true';
         const cur = localStorage.getItem('currentUserId');
@@ -101,7 +97,6 @@ export default function ReservationsPage() {
         return d.toLocaleString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
     };
 
-    // Добавление новой брони
     const handleBooking = async (e) => {
         e.preventDefault();
         if (!selectedUserId) {
@@ -121,15 +116,14 @@ export default function ReservationsPage() {
             await api.post('/demo/book', bookingRequest);
             alert('Бронь успешно создана!');
             setForm({ slotId: '', startTime: '', endTime: '', serviceIds: [] });
-            fetchAvailableSlots(); // Обновляем список свободных мест
-            fetchUserReservations(selectedUserId); // Обновляем список броней пользователя
+            fetchAvailableSlots();
+            fetchUserReservations(selectedUserId);
         } catch (error) {
             console.error('Ошибка при бронировании', error);
             alert(error.response?.data?.message || 'Ошибка создания брони (возможно место уже занято)');
         }
     };
 
-    // Удаление брони (освобождение места)
     const handleFreeSlot = async (slotId) => {
         if (window.confirm('Вы уверены, что хотите отменить эту бронь и освободить место?')) {
             try {
@@ -170,7 +164,7 @@ export default function ReservationsPage() {
                 slotId: Number(res.slot?.id || res.slotId),
                 startTime: new Date(editForm.startTime).toISOString(),
                 endTime: new Date(editForm.endTime).toISOString(),
-                serviceIds: res.services?.map(s => s.id) || [] // Оставляем текущие услуги
+                serviceIds: res.services?.map(s => s.id) || []
             };
             await api.post(`/demo/book/${res.id}`, bookingRequest);
             alert('Бронь успешно обновлена!');

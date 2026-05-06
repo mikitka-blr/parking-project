@@ -108,11 +108,19 @@ public class DatabaseSeeder implements CommandLineRunner {
     private void createTestUsers() {
         List<User> users = Arrays.asList(
             new User("Иван Петров", "ivan@example.com"),
-            new User("Мария Сидорова", "maria@example.com")
+            new User("Мария Сидорова", "maria@example.com"),
+            // Админ пользователь для демонстрации (логин: admin, email: admin@gmail.com)
+            new User("admin", "admin@gmail.com")
         );
 
         for (User user : users) {
             if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
+                // set default password for admin
+                boolean isAdminUser = "admin@gmail.com".equalsIgnoreCase(user.getEmail())
+                    || "admin".equalsIgnoreCase(user.getFullName());
+                if (isAdminUser) {
+                    user.setPassword("12345678");
+                }
                 userRepository.save(user);
                 LOG.info("Создан пользователь: {}", user.getEmail());
             }

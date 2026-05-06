@@ -43,6 +43,8 @@ public class UserController {
     })
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
+        // set password explicitly from DTO (mapper does not copy password to avoid exposing it)
+        user.setPassword(userDTO.getPassword());
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(userMapper.toDTO(createdUser), HttpStatus.CREATED);
     }

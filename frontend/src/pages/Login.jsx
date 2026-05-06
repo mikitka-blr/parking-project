@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/api';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
     const [users, setUsers] = useState([]);
-    const [selectedUserId, setSelectedUserId] = useState('');
-    const [adminPassword, setAdminPassword] = useState('');
-    const [showRegister, setShowRegister] = useState(false);
-    const [regForm, setRegForm] = useState({ fullName: '', email: '' });
     const [emailInput, setEmailInput] = useState('');
-    const [loginInput, setLoginInput] = useState('');
+    const [passwordInput, setPasswordInput] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [regForm, setRegForm] = useState({ fullName: '', email: '' });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,24 +19,27 @@ export default function Login() {
         api.get('/users').then(res => { if (res.data) setUsers(res.data); }).catch(() => {});
     };
 
-    const loginAsUser = async () => {
+    const login = async () => {
         try {
-            let userId = selectedUserId;
-            if (!userId) {
-                // try find by email or login
-                const byEmail = emailInput && users.find(u => String(u.email).toLowerCase() === emailInput.trim().toLowerCase());
-                const byLogin = loginInput && users.find(u => String(u.fullName).toLowerCase() === loginInput.trim().toLowerCase());
-                const found = byEmail || byLogin;
-                if (found) {
-                    userId = found.id;
+            const email = (emailInput || '').trim().toLowerCase();
+            if (!email) { alert('Введите email'); return; }
+            // call backend auth endpoint
+            const resp = await api.post('/auth/login', { email, password: passwordInput });
+            if (resp.status === 200 && resp.data) {
+                const user = resp.data;
+                const isAdminUser = (String(user.email).toLowerCase() === 'admin@gmail.com') || (String(user.email).toLowerCase() === 'admin') || (String(user.fullName).toLowerCase() === 'admin');
+                if (isAdminUser) {
+                    localStorage.setItem('isAdmin', 'true');
+                    localStorage.removeItem('currentUserId');
+                    navigate('/app');
                 } else {
-                    alert('Пользователь не найден. Пожалуйста, выберите из списка или зарегистрируйтесь.');
-                    return;
+                    localStorage.setItem('currentUserId', String(user.id));
+                    localStorage.setItem('isAdmin', 'false');
+                    navigate('/app/reservations');
                 }
+            } else {
+                alert('Неверные учётные данные');
             }
-            localStorage.setItem('currentUserId', String(userId));
-            localStorage.setItem('isAdmin', 'false');
-            navigate('/app/reservations');
         } catch (err) {
             console.error(err);
             alert('Ошибка при входе');
@@ -48,7 +50,6 @@ export default function Login() {
         if (!regForm.fullName || !regForm.email) { alert('Заполните имя и email'); return; }
         try {
             const resp = await api.post('/users', { fullName: regForm.fullName, email: regForm.email });
-            // обновим список и залогиним
             loadUsers();
             const newId = resp.data?.id;
             if (newId) {
@@ -64,55 +65,26 @@ export default function Login() {
         }
     };
 
-    const loginAsAdmin = () => {
-        if (adminPassword === '12345') {
-            localStorage.setItem('isAdmin', 'true');
-            localStorage.removeItem('currentUserId');
-            navigate('/app');
-        } else {
-            alert('Неверный пароль администратора');
-        }
-    };
-
     return (
         <div style={{ maxWidth: 960, margin: '40px auto', position: 'relative' }}>
-            <button className="btn" style={{ position: 'absolute', right: 0, top: 0, margin: 12, padding: '6px 10px' }} onClick={() => {
-                // show small admin prompt
-                const pw = window.prompt('Введите пароль администратора:');
-                if (!pw) return;
-                if (pw === '12345') { localStorage.setItem('isAdmin', 'true'); localStorage.removeItem('currentUserId'); navigate('/app'); } else { alert('Неверный пароль'); }
-            }}>Войти как админ</button>
-
             <h1 className="page-title" style={{ textAlign: 'center' }}>Добро пожаловать в AutoParking</h1>
             <div style={{ display: 'flex', gap: 20, marginTop: 20, justifyContent: 'center' }}>
                 <div className="card" style={{ width: 600, padding: 28 }}>
-                    <h2 style={{ marginTop: 0 }}>Войти как пользователь</h2>
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 12 }}>
-                                                        <select value={selectedUserId} onChange={e => {
-                                                            const val = e.target.value;
-                                                            setSelectedUserId(val);
-                                                            const found = users.find(u => String(u.id) === String(val));
-                                                            if (found) {
-                                                                setEmailInput(found.email || '');
-                                                                setLoginInput(found.fullName || '');
-                                                            }
-                                                        }} style={{ flex: 1 }}>
-                                                            <option value="">-- Выберите пользователя --</option>
-                                                            {users.map(u => <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>)}
-                                                        </select>
-                    </div>
+                    <h2 style={{ marginTop: 0 }}>Войти</h2>
                     <div style={{ borderTop: '1px solid #eee', paddingTop: 12 }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
-                                                            <input placeholder="Email" value={emailInput} onChange={e => setEmailInput(e.target.value)} style={{ width: '100%' }} />
-                                                            <input placeholder="Логин" value={loginInput} onChange={e => setLoginInput(e.target.value)} style={{ width: '100%' }} />
-                                                            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 8 }}>
-                                                                <button className="btn" onClick={loginAsUser} style={{ fontSize: 18, padding: '10px 20px', minWidth: 220 }}>Войти</button>
-                                                            </div>
-                                                            <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }} style={{ marginTop: 6, fontSize: 12, color: '#007bff', cursor: 'pointer', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration='underline'} onMouseLeave={e => e.currentTarget.style.textDecoration='none'}>Зарегистрироваться</a>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            <div style={{ position: 'relative' }}>
+                                <input placeholder="Email или ФИО" value={emailInput} onChange={e => setEmailInput(e.target.value)} style={{ width: '100%', marginBottom: 8 }} />
+                                <input placeholder="Пароль" type={showPassword ? 'text' : 'password'} value={passwordInput} onChange={e => setPasswordInput(e.target.value)} style={{ width: '100%', paddingRight: 40 }} />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 8, top: 36, border: 'none', background: 'transparent', padding: 4, cursor: 'pointer' }} aria-label="toggle password">
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
+                            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                                <button className="btn" onClick={login} style={{ fontSize: 18, padding: '10px 20px', minWidth: 220 }}>Войти</button>
+                            </div>
+                            <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }} style={{ marginTop: 6, fontSize: 12, color: '#007bff', cursor: 'pointer', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration='underline'} onMouseLeave={e => e.currentTarget.style.textDecoration='none'}>Зарегистрироваться</a>
                         </div>
-                        {showRegister && (
-                            <div style={{ marginTop: 10, display: 'none' }} />
-                        )}
                     </div>
                 </div>
             </div>

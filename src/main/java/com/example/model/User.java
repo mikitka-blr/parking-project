@@ -36,6 +36,9 @@ public class User {
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -99,5 +102,13 @@ public class User {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

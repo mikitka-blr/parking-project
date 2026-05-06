@@ -17,6 +17,7 @@ public class UserDTO {
     private String email;
 
     private boolean active;
+    private String password;
 
     public UserDTO() {
     }
@@ -26,6 +27,14 @@ public class UserDTO {
         this.fullName = fullName;
         this.email = email;
         this.active = active;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Long getId() {
