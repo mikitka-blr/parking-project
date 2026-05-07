@@ -73,17 +73,23 @@ export default function Login() {
                     <h2 style={{ marginTop: 0 }}>Войти</h2>
                     <div style={{ borderTop: '1px solid #eee', paddingTop: 12 }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            <div style={{ position: 'relative' }}>
-                                <input placeholder="Email или ФИО" value={emailInput} onChange={e => setEmailInput(e.target.value)} style={{ width: '100%', marginBottom: 8 }} />
-                                <input placeholder="Пароль" type={showPassword ? 'text' : 'password'} value={passwordInput} onChange={e => setPasswordInput(e.target.value)} style={{ width: '100%', paddingRight: 40 }} />
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 8, top: 36, border: 'none', background: 'transparent', padding: 4, cursor: 'pointer' }} aria-label="toggle password">
-                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                </button>
+                            <div>
+                                <div style={{ marginBottom: 8 }}>
+                                    <input placeholder="Email или ФИО" value={emailInput} onChange={e => setEmailInput(e.target.value)} style={{ width: '100%' }} />
+                                </div>
+                                <div style={{ position: 'relative' }}>
+                                    <input placeholder="Пароль" type={showPassword ? 'text' : 'password'} value={passwordInput} onChange={e => setPasswordInput(e.target.value)} style={{ width: '100%', paddingRight: 44 }} />
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 7, top: '40%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }} aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'} title={showPassword ? 'Скрыть пароль' : 'Показать пароль'}>
+                                        {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                                    </button>
+                                </div>
                             </div>
                             <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 8 }}>
-                                <button className="btn" onClick={login} style={{ fontSize: 18, padding: '10px 20px', minWidth: 220 }}>Войти</button>
+                                <button className="btn" onClick={login} style={{ fontSize: 18, padding: '10px 20px', minWidth: 220, justifyContent: 'center' }}>Войти</button>
                             </div>
-                            <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }} style={{ marginTop: 6, fontSize: 12, color: '#007bff', cursor: 'pointer', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration='underline'} onMouseLeave={e => e.currentTarget.style.textDecoration='none'}>Зарегистрироваться</a>
+                            <div style={{ textAlign: 'center', marginTop: 6 }}>
+                                <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }} style={{ fontSize: 12, color: '#007bff', cursor: 'pointer', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration='underline'} onMouseLeave={e => e.currentTarget.style.textDecoration='none'}>Зарегистрироваться</a>
+                            </div>
                         </div>
                     </div>
                 </div>

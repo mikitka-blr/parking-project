@@ -21,11 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "Пользователи", description = "CRUD операции для управления пользователями")
 public class UserController {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final UserMapper userMapper;
@@ -33,6 +36,31 @@ public class UserController {
     public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
+    }
+
+    // Debug endpoint to delete user with detailed response (dev only)
+    @PostMapping("/debug/delete/{id}")
+    public ResponseEntity<Map<String, Object>> debugDeleteUser(@PathVariable Long id) {
+        LOG.info("Debug delete request for user id={}", id);
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            boolean deleted = userService.deleteUser(id);
+            resp.put("deleted", deleted);
+            resp.put("id", id);
+            if (deleted) {
+                LOG.info("Debug: user id={} deleted", id);
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+            } else {
+                LOG.info("Debug: user id={} not found", id);
+                resp.put("message", "User not found");
+                return new ResponseEntity<>(resp, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception ex) {
+            LOG.error("Debug delete failed for user id={}", id, ex);
+            resp.put("deleted", false);
+            resp.put("error", ex.getMessage());
+            return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping
@@ -94,10 +122,18 @@ public class UserController {
     @Operation(summary = "Удалить пользователя")
     public ResponseEntity<Void> deleteUser(
         @Parameter(description = "ID пользователя", example = "1") @PathVariable Long id) {
-        boolean deleted = userService.deleteUser(id);
+        LOG.info("Request to delete user id={}", id);
+        boolean deleted = false;
+        try {
+            deleted = userService.deleteUser(id);
+        } catch (Exception ex) {
+            LOG.error("Error while deleting user id={}", id, ex);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         if (!deleted) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        LOG.info("User id={} deleted", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

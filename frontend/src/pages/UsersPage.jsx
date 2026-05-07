@@ -54,13 +54,34 @@ export default function UsersPage() {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Вы уверены, что хотите удалить?')) {
-            try {
-                await api.delete(`/users/${id}`);
-                fetchUsers();
-            } catch (error) {
-                console.error('Ошибка удаления', error);
+        try {
+        } catch (e) {
+            // ignore if blocked
+        }
+        console.log('handleDelete called for id=', id);
+        const currentId = localStorage.getItem('currentUserId');
+        // prevent deleting currently logged-in user
+        if (String(id) === String(currentId)) {
+            alert('Нельзя удалить пользователя, под которым вы залогинены');
+            return;
+        }
+        if (!window.confirm('Вы уверены, что хотите удалить?')) return;
+        console.log('User confirmed deletion for id=', id);
+        try {
+            const resp = await api.delete(`/users/${id}`);
+            console.log('DELETE /users response', resp);
+            // axios returns response even for 204; show feedback
+            if (resp && (resp.status === 200 || resp.status === 204 || resp.status === 202)) {
+                alert('Пользователь удалён');
+            } else {
+                alert('Операция удаления выполнена (статус: ' + (resp?.status || 'unknown') + ')');
             }
+            fetchUsers();
+        } catch (error) {
+            console.error('Ошибка удаления', error);
+            const status = error?.response?.status;
+            const msg = error?.response?.data?.message || error.message || 'Ошибка';
+            alert('Ошибка удаления: ' + (status ? status + ' - ' : '') + msg);
         }
     };
 
@@ -123,11 +144,11 @@ export default function UsersPage() {
                                     </td>
                                         <td>{user.email}</td>
                                             <td style={{ display: 'flex', gap: '10px' }}>
-                                        <button className="btn" style={{ padding: '6px 10px' }} onClick={() => handleEdit(user)}>
+                                        <button type="button" className="btn" style={{ padding: '6px 10px' }} onClick={() => handleEdit(user)}>
                                             <Edit2 size={14} />
                                         </button>
-                                        <button className="btn btn-danger" style={{ padding: '6px 10px' }} onClick={() => handleDelete(user.id)}>
-                                            <Trash2 size={14} />
+                                        <button type="button" className="btn btn-danger" style={{ padding: '6px 10px' }} onClick={() => handleDelete(user.id)}>
+                                            <Trash2 size={14} onClick={() => handleDelete(user.id)} />
                                         </button>
                                     </td>
                                 </tr>

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
@@ -49,15 +50,21 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        // Форсированная пересевка: очищаем и создаем тестовые данные
-        LOG.info("Запуск DatabaseSeeder: выполняется очистка и пересев тестовых данных");
+        if (parkingLotRepository.count() > 0) {
+            LOG.info("DatabaseSeeder: база данных уже содержит данные, пропускаем инициализацию");
+            // Все равно убедимся, что пользователи из кода созданы/обновлены (например, admin)
+            createTestUsers();
+            return;
+        }
+
+        LOG.info("Запуск DatabaseSeeder: выполняется создание тестовых данных");
         clearDatabase();
         createExtraServices();
         createParkingLot();
         createTestUsers();
         createTestReservations();
 
-        LOG.info("DatabaseSeeder завершён: тестовые данные пересозданы");
+        LOG.info("DatabaseSeeder завершён: тестовые данные добавлены");
     }
 
     private void clearDatabase() {
@@ -114,12 +121,21 @@ public class DatabaseSeeder implements CommandLineRunner {
         );
 
         for (User user : users) {
-            if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
-                // set default password for admin
-                boolean isAdminUser = "admin@gmail.com".equalsIgnoreCase(user.getEmail())
-                    || "admin".equalsIgnoreCase(user.getFullName());
+            Optional<User> existing = userRepository.findByEmail(user.getEmail());
+            boolean isAdminUser = "admin@gmail.com".equalsIgnoreCase(user.getEmail())
+                || "admin".equalsIgnoreCase(user.getFullName());
+            if (existing.isPresent()) {
+                // если админ уже есть — обновим пароль по умолчанию (удобно для демонстрации)
                 if (isAdminUser) {
-                    user.setPassword("12345678");
+                    User ex = existing.get();
+                    ex.setPassword("12345");
+                    userRepository.save(ex);
+                    LOG.info("Обновлён пароль для админа: {}", ex.getEmail());
+                }
+            } else {
+                // set default password for admin
+                if (isAdminUser) {
+                    user.setPassword("12345");
                 }
                 userRepository.save(user);
                 LOG.info("Создан пользователь: {}", user.getEmail());

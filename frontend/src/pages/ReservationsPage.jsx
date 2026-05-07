@@ -125,14 +125,17 @@ export default function ReservationsPage() {
     };
 
     const handleFreeSlot = async (slotId) => {
-        if (window.confirm('Вы уверены, что хотите отменить эту бронь и освободить место?')) {
-            try {
-                await api.post(`/demo/free-slot/${slotId}`);
-                fetchAvailableSlots();
-                fetchUserReservations(selectedUserId);
-            } catch (error) {
-                console.error('Ошибка при освобождении места', error);
-            }
+        console.log('handleFreeSlot called for slotId=', slotId);
+        if (!window.confirm('Вы уверены, что хотите отменить эту бронь и освободить место?')) return;
+        console.log('User confirmed free-slot for slotId=', slotId);
+        try {
+            const resp = await api.post(`/demo/free-slot/${slotId}`);
+            console.log('POST /demo/free-slot response', resp);
+            fetchAvailableSlots();
+            fetchUserReservations(selectedUserId);
+        } catch (error) {
+            console.error('Ошибка при освобождении места', error, error?.response);
+            alert('Ошибка при отмене брони: ' + (error?.response?.data?.message || error.message));
         }
     };
 
@@ -318,21 +321,21 @@ export default function ReservationsPage() {
                                     </td>
                                     <td>
                                         {editingResId === res.id ? (
-                                            <>
-                                                <button className="btn" style={{background: '#28a745', color: 'white', padding: '6px 10px', fontSize: '12px', marginRight: '5px'}} onClick={() => handleSaveEdit(res)}>Сохранить</button>
-                                                <button className="btn btn-danger" style={{padding: '6px 10px', fontSize: '12px'}} onClick={handleCancelEdit}>Отмена</button>
-                                            </>
+                                            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                                                <button type="button" className="btn" style={{background: '#28a745', color: 'white', padding: '6px 10px', fontSize: '12px', margin: 0}} onClick={() => handleSaveEdit(res)}>Сохранить</button>
+                                                <button type="button" className="btn btn-danger" style={{padding: '6px 10px', fontSize: '12px', margin: 0}} onClick={handleCancelEdit}>Отмена</button>
+                                            </div>
                                         ) : (
-                                            <>
-                                                <button className="btn" style={{padding: '6px 10px', fontSize: '12px', marginRight: '5px'}} onClick={() => handleEditClick(res)}>Редактировать</button>
-                                                <button
+                                            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                                                <button type="button" className="btn" style={{padding: '6px 10px', fontSize: '12px', margin: 0}} onClick={() => handleEditClick(res)}>Редактировать</button>
+                                                <button type="button"
                                                     className="btn btn-danger"
                                                     onClick={() => handleFreeSlot(res.slot?.id || res.slotId)}
-                                                    style={{ padding: '6px 10px', fontSize: '12px' }}
+                                                    style={{ padding: '6px 10px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px', margin: 0 }}
                                                 >
                                                     <Trash2 size={14} /> Отменить
                                                 </button>
-                                            </>
+                                            </div>
                                         )}
                                     </td>
                                 </tr>
