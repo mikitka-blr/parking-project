@@ -9,6 +9,8 @@ export default function SlotsPage() {
     const [filterType, setFilterType] = useState('ALL');
     const [filterOccupied, setFilterOccupied] = useState('ALL');
     const [isAdmin, setIsAdmin] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
     const navigate = useNavigate();
 
     const fetchSlots = async () => {
@@ -34,6 +36,10 @@ export default function SlotsPage() {
         setIsAdmin(admin);
     }, []);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filterType, filterOccupied]);
+
     const handleFree = async (id) => {
         if (!isAdmin) {
             const pw = window.prompt('Введите пароль администратора для освобождения места:');
@@ -57,6 +63,11 @@ export default function SlotsPage() {
         if (filterOccupied === 'OCCUPIED' && !s.occupied) return false;
         return true;
     });
+
+    const totalPages = Math.ceil(filteredSlots.length / itemsPerPage);
+    const indexOfLastSlot = currentPage * itemsPerPage;
+    const indexOfFirstSlot = indexOfLastSlot - itemsPerPage;
+    const currentSlots = filteredSlots.slice(indexOfFirstSlot, indexOfLastSlot);
 
     return (
         <div>
@@ -82,10 +93,11 @@ export default function SlotsPage() {
                     {/* admin login removed from this page; use main Login page to enter as admin */}
                 </div>
                 {loading ? <p>Загрузка...</p> : (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-                        {filteredSlots.map(slot => (
-                            <div
-                                key={slot.id}
+                    <>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+                            {currentSlots.map(slot => (
+                                <div
+                                    key={slot.id}
                                 style={{
                                     border: '1px solid #ccc',
                                     borderRadius: '8px',
@@ -133,7 +145,32 @@ export default function SlotsPage() {
                                 )}
                             </div>
                         ))}
-                    </div>
+                        </div>
+
+                        {totalPages > 1 && (
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginTop: '25px', width: '100%' }}>
+                                <button
+                                    className="btn"
+                                    style={currentPage === 1 ? { background: '#ccc', cursor: 'not-allowed' } : {}}
+                                    disabled={currentPage === 1}
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                >
+                                    &larr; Назад
+                                </button>
+                                <span style={{ fontWeight: 'bold' }}>
+                                    Страница {currentPage} из {totalPages}
+                                </span>
+                                <button
+                                    className="btn"
+                                    style={currentPage === totalPages ? { background: '#ccc', cursor: 'not-allowed' } : {}}
+                                    disabled={currentPage === totalPages}
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                >
+                                    Вперед &rarr;
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </div>
