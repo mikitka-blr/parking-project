@@ -45,7 +45,8 @@ export default function ReservationsPage() {
         if (!userId) return;
         setLoading(true);
         try {
-            const response = await api.get(`/demo/users/${userId}/reservations`);
+            const url = userId === 'ALL' ? '/demo/reservations' : `/demo/users/${userId}/reservations`;
+            const response = await api.get(url);
             if (response.status === 200 || response.status === 204) {
                 setReservations(Array.isArray(response.data) ? response.data : []);
             }
@@ -75,7 +76,9 @@ export default function ReservationsPage() {
     useEffect(() => {
         const isAdmin = localStorage.getItem('isAdmin') === 'true';
         const cur = localStorage.getItem('currentUserId');
-        if (!isAdmin && cur) {
+        if (isAdmin) {
+            setSelectedUserId('ALL');
+        } else if (cur) {
             setSelectedUserId(cur);
         }
     }, []);
@@ -197,7 +200,7 @@ export default function ReservationsPage() {
                                 onChange={(e) => setSelectedUserId(e.target.value)}
                                 style={{ width: '300px', marginBottom: 0 }}
                             >
-                                <option value="">-- Выберите пользователя --</option>
+                                <option value="ALL">-- Показать все брони --</option>
                                 {users.map(u => (
                                     <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>
                                 ))}
@@ -214,7 +217,7 @@ export default function ReservationsPage() {
                 </form>
             </div>
 
-            {selectedUserId && (
+            {selectedUserId && selectedUserId !== 'ALL' && (
                 <div className="card" style={{ backgroundColor: '#fffdf5', borderLeft: '4px solid var(--primary-yellow)' }}>
                     <h2>Создать бронь</h2>
                     <form onSubmit={handleBooking} style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -340,9 +343,14 @@ export default function ReservationsPage() {
                                     </td>
                                 </tr>
                             ))}
-                            {reservations.length === 0 && selectedUserId && (
+                            {reservations.length === 0 && selectedUserId !== 'ALL' && (
                                 <tr>
                                     <td colSpan="4" style={{ textAlign: 'center' }}>У этого пользователя пока нет бронирований. Забронируйте место выше!</td>
+                                </tr>
+                            )}
+                            {reservations.length === 0 && selectedUserId === 'ALL' && (
+                                <tr>
+                                    <td colSpan="4" style={{ textAlign: 'center' }}>В системе нет ни одного бронирования.</td>
                                 </tr>
                             )}
                         </tbody>

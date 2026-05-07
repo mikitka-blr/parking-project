@@ -83,6 +83,16 @@ public class DemoController {
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
+    @GetMapping("/reservations")
+    @Operation(summary = "Все бронирования", description = "Возвращает список всех броней в системе")
+    public ResponseEntity<List<Reservation>> getAllReservations() {
+        List<Reservation> reservations = demoService.getAllReservations();
+        if (reservations.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
+    }
+
     @GetMapping("/users/{userId}/reservations")
     @Operation(
         summary = "Брони пользователя",

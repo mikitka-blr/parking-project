@@ -14,6 +14,12 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     List<Reservation> findByUserId(Long userId);
+    
+    @Query("SELECT DISTINCT r FROM Reservation r LEFT JOIN FETCH r.slot s LEFT JOIN FETCH r.services WHERE r.user.id = :userId")
+    List<Reservation> findByUserIdWithSlotsAndServices(@Param("userId") Long userId);
+
+    @Query("SELECT DISTINCT r FROM Reservation r LEFT JOIN FETCH r.slot s LEFT JOIN FETCH r.services")
+    List<Reservation> findAllWithSlotsAndServices();
 
     List<Reservation> findBySlotId(Long slotId);
 

@@ -163,7 +163,11 @@ public class DemoService {
     }
 
     public List<Reservation> getUserReservations(Long userId) {
-        return reservationRepository.findByUserId(userId);
+        return reservationRepository.findByUserIdWithSlotsAndServices(userId);
+    }
+
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAllWithSlotsAndServices();
     }
 
     public List<BaseParkingSlot> getAvailableSlots() {
