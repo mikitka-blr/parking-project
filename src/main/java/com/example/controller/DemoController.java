@@ -84,7 +84,7 @@ public class DemoController {
     }
 
     @GetMapping("/reservations")
-    @Operation(summary = "Все бронирования", description = "Возвращает список всех броней в системе")
+    @Operation(summary = "Все бронирования")
     public ResponseEntity<List<Reservation>> getAllReservations() {
         List<Reservation> reservations = demoService.getAllReservations();
         if (reservations.isEmpty()) {

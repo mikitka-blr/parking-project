@@ -114,6 +114,10 @@ public class DemoService {
         if (request.getEndTime() != null) {
             reservation.setEndTime(request.getEndTime());
         }
+        if (request.getServiceIds() != null) {
+            List<ExtraService> services = extraServiceRepository.findAllById(request.getServiceIds());
+            reservation.setServices(services);
+        }
         Reservation saved = reservationRepository.save(reservation);
         cacheService.clearCache();
         return saved;

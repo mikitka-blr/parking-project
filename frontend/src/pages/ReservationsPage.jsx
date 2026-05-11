@@ -10,7 +10,7 @@ export default function ReservationsPage() {
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(false);
     const [editingResId, setEditingResId] = useState(null);
-    const [editForm, setEditForm] = useState({ startTime: '', endTime: '' });
+    const [editForm, setEditForm] = useState({ startTime: '', endTime: '', serviceIds: [] });
     const location = useLocation();
 
     const [availableSlots, setAvailableSlots] = useState([]);
@@ -159,18 +159,19 @@ export default function ReservationsPage() {
         setEditingResId(res.id);
         setEditForm({
             startTime: formatForInput(res.startTime),
-            endTime: formatForInput(res.endTime)
+            endTime: formatForInput(res.endTime),
+            serviceIds: res.services?.map(s => s.id) || []
         });
     };
 
     const handleSaveEdit = async (res) => {
         try {
             const bookingRequest = {
-                userId: Number(selectedUserId),
+                userId: res.user?.id ? Number(res.user.id) : Number(selectedUserId),
                 slotId: Number(res.slot?.id || res.slotId),
                 startTime: new Date(editForm.startTime).toISOString(),
                 endTime: new Date(editForm.endTime).toISOString(),
-                serviceIds: res.services?.map(s => s.id) || []
+                serviceIds: editForm.serviceIds || []
             };
             await api.post(`/demo/book/${res.id}`, bookingRequest);
             alert('Бронь успешно обновлена!');
@@ -261,7 +262,7 @@ export default function ReservationsPage() {
                                                 setForm({...form, serviceIds: form.serviceIds.filter(id => id !== srv.id)});
                                             }
                                         }}
-                                        style={{ margin: 0 }}
+                                        style={{ margin: 0, width: 'auto', cursor: 'pointer' }}
                                     /> {srv.name}
                                 </label>
                             ))}
@@ -289,6 +290,11 @@ export default function ReservationsPage() {
                                 <tr key={res.id}>
                                     <td>
                                         <strong>{res.slot?.number || ''}</strong>
+                                        {selectedUserId === 'ALL' && res.user && (
+                                            <div style={{ fontSize: '13px', color: '#555', marginTop: '4px' }}>
+                                                {res.user.fullName || res.user.email}
+                                            </div>
+                                        )}
                                     </td>
                                     <td>
                                         {editingResId === res.id ? (
@@ -312,7 +318,26 @@ export default function ReservationsPage() {
                                         )}
                                     </td>
                                     <td>
-                                        {res.services && res.services.length > 0 ? (
+                                        {editingResId === res.id ? (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                {extraServices.map(srv => (
+                                                    <label key={srv.id} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '13px' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={editForm.serviceIds?.includes(srv.id) || false}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    setEditForm({...editForm, serviceIds: [...(editForm.serviceIds || []), srv.id]});
+                                                                } else {
+                                                                    setEditForm({...editForm, serviceIds: (editForm.serviceIds || []).filter(id => id !== srv.id)});
+                                                                }
+                                                            }}
+                                                            style={{ margin: 0, width: 'auto', cursor: 'pointer' }}
+                                                        /> {srv.name} (₽{srv.price})
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        ) : res.services && res.services.length > 0 ? (
                                             <ul style={{ margin: 0, paddingLeft: '20px' }}>
                                                 {res.services.map(srv => (
                                                     <li key={srv.id}>{srv.name} (₽{srv.price})</li>
