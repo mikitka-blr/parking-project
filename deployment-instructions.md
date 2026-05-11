@@ -1,35 +1,35 @@
-   git add .
-   git commit -m "Add Docker and CI/CD for PaaS deployment"
-   git push# Инструкция по развертыванию приложения (PaaS)
+# Инструкция по развертыванию приложения
 
-Для развертывания приложения бесплатно мы можем использовать сервисы, предоставляющие бесплатный уровень для Docker контейнеров или Java приложений, например **Render.com**.
+В этом проекте используется раздельное развертывание:
+- **Backend (Spring Boot)** размещается на **Heroku**.
+- **Frontend (React/Vite)** размещается на **Vercel**.
 
-## Развертывание PostgreSQL (Render)
-1. Выберите в панели управления Render `New` -> `PostgreSQL`.
-2. Задайте имя базы. Должно выбраться "Free" (бесплатный план).
-3. После создания сохраните `Internal Database URL` (для связи внутри сервиса Render) и `External Database URL`. Скопируйте пароль (`Password`).
+## 1. Развертывание Backend (Heroku)
+Проект настроен для нативной сборки Spring Boot приложения в Heroku через Gradle:
+1. Зарегистрируйтесь на [Heroku](https://heroku.com).
+2. Создайте новое приложение `New` -> `Create new app` (например, `parking-api`).
+3. Перейдите на вкладку **Resources** и в поиске *Add-ons* найдите **Heroku Postgres**. Выберите тариф *Mini* (он бесплатный) и добавьте к приложению. Heroku автоматически создаст базу данных и пропишет переменную окружения `DATABASE_URL`.
+4. Перейдите на вкладку **Settings** -> **Reveal Config Vars**. Убедитесь, что там есть `DATABASE_URL` или добавьте свои:
+   - `DB_URL`: скопируйте URL из `DATABASE_URL` заменив `postgres://` на `jdbc:postgresql://` (как в application.properties).
+   - `DB_USERNAME`: ваш логин из деталей базы данных Heroku
+   - `DB_PASSWORD`: ваш пароль из деталей базы
+   *(Дополнительно можно переопределить `SPRING_DATASOURCE_URL`, Heroku поддерживает это изначально).*
+5. Перейдите на вкладку **Deploy**.
+6. В разделе `Deployment method` выберите **GitHub** и привяжите ваш репозиторий.
+7. Прокрутите вниз до **Manual deploy** (или включите Automatic) и нажмите `Deploy Branch` (main). Heroku сам запустит Gradle, скачает зависимости, соберет `.jar` и запустит сервер, переопределив порт через переменную окружения `PORT`.
+8. После успешного деплоя скопируйте базовый URL вашего бэкенда (например: `https://parking-api.herokuapp.com/api`).
 
-## Развертывание Приложения Spring Boot (Render)
-Репозиторий с проектом должен быть загружен на GitHub.
-1. Выберите `New` -> `Web Service`.
-2. Выберите репозиторий с проектом на GitHub и нажмите `Connect`.
-3. Укажите параметры:
-   - **Name**: имя сервиса (например, `parking-api`).
-   - **Environment**: `Docker`.
-   - **Branch**: `main` (или ветка с вашим кодом).
-4. Перейдите в настройки `Environment Variables` (переменные окружения) и добавьте те, что используются в `application.properties`:
-   - `DB_URL`: Вставьте URL базы данных (скопированный `Internal Database URL` от PostgreSQL) в формате `jdbc:postgresql://<host>/<dbname>`. Например: `jdbc:postgresql://dpg-ckc9p50kdf8s73a21s0g-a:5432/parking_db`
-   - `DB_USERNAME`: Вставьте `User` базы.
-   - `DB_PASSWORD`: Вставьте `Password` от базы данных.
-5. Выберите тариф `Free` и нажмите `Create Web Service`.
+## 2. Развертывание Frontend (Vercel)
+Vercel отлично подходит для быстрой публикации React-приложений:
+1. Откройте [Vercel](https://vercel.com/) и войдите через свой GitHub аккаунт.
+2. Нажмите **Add New...** -> **Project**.
+3. Выберите репозиторий `parking2` из списка и нажмите `Import`.
+4. В настройках проекта:
+   - В поле **Framework Preset** выберите **Vite**.
+   - В поле **Root Directory** нажмите Edit и выберите папку `frontend`.
+5. Откройте секцию **Environment Variables**:
+   - Name: `VITE_API_URL`
+   - Value: URL вашего бэкенда на Heroku, который вы получили ранее (например: `https://parking-api.herokuapp.com/api`)
+6. Нажмите **Deploy**.
 
-Теперь Render самостоятельно соберет приложение с использованием нашего `Dockerfile` и запустит сервер, подключенный к базе PostgreSQL.
-
-## Настройка Healthcheck в CI/CD
-Сейчас пайплайн GitHub Actions настроен на:
-- **Build и Тесты**: сборку проекта (Gradle) и прогон всех тестов.
-- **Docker-сборку**: Сборку Docker-образа в случае успешного прохождения тестов.
-
-Чтобы Render автоматически переразвертывал приложение после коммита в `main`, он использует Webhook.
-Healthcheck на стороне Render контролируется автоматически по открытому порту веб-сервиса. Render считает деплой успешным, когда порт 8080 начинает отвечать на запросы.
-
+Готово! После завершения сборки Vercel выдаст вам публичную ссылку на фронтенд вашего приложения. Фронтенд будет взаимодействовать с базой данных через бэкенд на Heroku.
