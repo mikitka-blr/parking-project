@@ -206,7 +206,7 @@ class DemoServiceTest {
     @Test
     void testGetUserReservations() {
         demoService.getUserReservations(1L);
-        verify(reservationRepository).findByUserId(1L);
+        verify(reservationRepository).findByUserIdWithSlotsAndServices(1L);
     }
 
     @Test
