@@ -38,7 +38,3 @@ jobs:
 
     - name: Build Docker Image
       run: docker build -t my-parking-app:latest .
-
-    # В реальном проекте здесь будет шаг авторизации и push образа в Docker Hub (docker login && docker push)
-    # И шаг деплоя на хостинг
-
