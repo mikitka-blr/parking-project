@@ -100,8 +100,7 @@ test-output/
 .gradle/
 build/
 gradle-app.setting
-!gradle-wrapper.jar
-/gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.jar
 
 ### YOUR PROJECT SPECIFIC ###
 # Папка с классами (если есть)
