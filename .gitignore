@@ -18,6 +18,8 @@
 *.zip
 *.tar.gz
 *.rar
+*.msi
+*.exe
 
 # virtual machine crash logs
 hs_err_pid*
@@ -29,6 +31,26 @@ replay_pid*
 *.iws
 *.ipr
 out/
+.idea_modules/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/contentModel.xml
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+
+*.hprof
+
+# Env files
+.env
+.env.*
+!.env.example
 
 # Maven
 target/
@@ -65,10 +87,6 @@ nbactions.xml
 ehthumbs.db
 Thumbs.db
 
-# Spring Boot
-application-*.properties
-application-*.yml
-
 # Test reports
 test-output/
 
@@ -91,29 +109,3 @@ classes/
 # Временные файлы
 *.tmp
 *.temp
-
-### ADD TO EXISTING SECTIONS ###
-# Добавьте в секцию Package Files:
-*.msi
-*.exe
-
-# Добавьте в секцию IntelliJ:
-.idea_modules/
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/dictionaries
-.idea/**/shelf
-.idea/**/contentModel.xml
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-<<<<<<< HEAD
-.idea/**/dbnavigator.xml
-=======
-.idea/**/dbnavigator.xml
->>>>>>> 9cb55658a1e517bcf0560d6f5e488fd6ffeecb1e
-
-*.hprof
